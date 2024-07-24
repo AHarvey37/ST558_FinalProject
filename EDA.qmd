@@ -5,12 +5,95 @@ format: html
 editor: visual
 ---
 
+## Introduction
+
+This project will use the "diabetes_binary_health_indicators_BRFSS2015" dataset. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:
+1. Diabetes_binary (response variable)
+2. HighBP
+3. HighChol
+4. CholCheck
+5. Smoker
+6. Stroke
+7. HeartDiseaseorAttack
+8. PhysActivity
+9. Fruits
+10. Veggies
+11. HvyAlcoholConsump
+12. AnyHealthcare
+13. NoDocbcCost
+14. DiffWalk
+15. Sex
+
+The following variables are continuous in the dataset:
+1. BMI
+2. GenHlth
+3. MentHlth
+4. PhysHlth
+5. Age
+6. Education
+7. Income
+
+# FIX ME
+##describe the purpose of your EDA and ultimate goal of modeling
+
 |    First we will load in the packages and the raw data.
 
-```{r Libraries and Raw data, warning=FALSE}
+```{r Libraries and Raw data, warning=FALSE, echo=FALSE}
 library(tidyverse)
+```
 
-rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+```{r Data exploration}
+rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
+
+# Quick determination of categorical variables
+for (i in 1:length(rawData)) {
+  print(unique(rawData[i]))
+}
+```
+
+```{r Convert variables to factors}
+#create a new data frame for cleaning and converts all binary variables into factors
+Cleaning1<- rawData|>
+  mutate(Diabetes_binary = as.factor(Diabetes_binary),
+         HighBP = as.factor(HighBP),
+         HighChol = as.factor(HighChol),
+         CholCheck = as.factor(CholCheck),
+         Smoker = as.factor(Smoker),
+         Stroke = as.factor(Stroke),
+         HeartDiseaseorAttack = as.factor(HeartDiseaseorAttack),
+         PhysActivity = as.factor(PhysActivity),
+         Fruits = as.factor(Fruits),
+         Veggies = as.factor(Veggies),
+         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
+         AnyHealthcare = as.factor(AnyHealthcare),
+         NoDocbcCost = as.factor(NoDocbcCost),
+         DiffWalk = as.factor(DiffWalk),
+         Sex = as.factor(Sex)
+         )
+
+```
+
+
+```{r Summary Tables}
+BMIsummary<- Cleaning1|>
+  group_by(Diabetes_binary,BMI)|>
+  count(BMI, name = "Count")
+
+ggplot(BMIsummary,aes(x = BMI, y = Count)) + geom_bar(stat = "identity",position = "dodge", aes(fill = Diabetes_binary))
+
+
+SmokeHeartSummary<- Cleaning1|>
+  group_by(Diabetes_binary,Smoker,HeartDiseaseorAttack)|>
+  count(Diabetes_binary,Smoker,HeartDiseaseorAttack, name = "count")|>
+  rowid_to_column("Group #")|>
+  mutate(Percent = count/nrow(Cleaning1))
+
+ggplot(SmokeHeartSummary,aes(x=`Group #`, y = Percent)) + geom_bar(stat = "identity")
+
+HealthSummary<-Cleaning1|>
+  group_by(Diabetes_binary,PhysActivity,Fruits,Veggies,GenHlth)|>
+  count(Diabetes_binary,PhysActivity,Fruits,Veggies,GenHlth)
+
 ```
 
 
