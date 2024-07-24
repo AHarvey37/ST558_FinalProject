@@ -8,6 +8,7 @@ editor: visual
 ## Introduction
 
 This project will use the "diabetes_binary_health_indicators_BRFSS2015" dataset. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:
+
 1. Diabetes_binary (response variable)
 2. HighBP
 3. HighChol
@@ -38,7 +39,7 @@ The following variables are continuous in the dataset:
 
 |    First we will load in the packages and the raw data.
 
-```{r Libraries and Raw data, warning=FALSE, echo=FALSE}
+```{r Libraries and Raw data, warning=FALSE, message=FALSE}
 library(tidyverse)
 ```
 
@@ -88,7 +89,8 @@ SmokeHeartSummary<- Cleaning1|>
   rowid_to_column("Group #")|>
   mutate(Percent = count/nrow(Cleaning1))
 
-ggplot(SmokeHeartSummary,aes(x=`Group #`, y = Percent)) + geom_bar(stat = "identity")
+ggplot(SmokeHeartSummary,aes(x=`Group #`, y = Percent, fill = Diabetes_binary)) +
+  geom_bar(stat = "identity")
 
 HealthSummary<-Cleaning1|>
   group_by(Diabetes_binary,PhysActivity,Fruits,Veggies,GenHlth)|>
