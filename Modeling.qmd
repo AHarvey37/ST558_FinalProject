@@ -7,6 +7,7 @@ editor: visual
 
 ```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
 library(tidyverse)
+library(caret)
 ```
 
 
@@ -15,7 +16,7 @@ rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #create a new data frame for cleaning and converts all binary variables into factors
 cleaned<- rawData|>
-  mutate(Diabetes_binary = as.factor(Diabetes_binary),
+  mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("Yes","No")),
          HighBP = as.factor(HighBP),
          HighChol = as.factor(HighChol),
          CholCheck = as.factor(CholCheck),
@@ -31,7 +32,7 @@ cleaned<- rawData|>
          DiffWalk = as.factor(DiffWalk),
          Sex = as.factor(Sex)
          )|>
-  select(Diabetes_binary,Age,Education,Income)
+  select(Diabetes_binary,Age,Education,Income,PhysHlth,BMI)
 ```
 
 ## Modeling
@@ -49,7 +50,66 @@ trainingVec <- sample(1:nrow(cleaned),
 # Split data into training and test sets
 ## Training set
 diabetesTrain <- cleaned[trainingVec,]
-
 ## Test set
 diabetesTest <- cleaned[-trainingVec,]
+
+
 ```
+
+
+# write a paragraph here about log loss
+mnLogLoss computes the minus log-likelihood of the multinomial distribution (without the constant term): $$-logLoss = \frac{-1}{n}\sum_{i=1}^{n}\sum_{j=1}^{C}y_{ij}log(p_{ij})$$
+
+```{r set train control and 5 fold cross-validation using mnLogLoss}
+# make Train Control Variable with 5 fold cross-validation
+trctrl<- trainControl(method = "cv",
+                      number = 5,
+                      classProbs = TRUE,
+                      summaryFunction = mnLogLoss)
+```
+
+# write a paragraph about log models
+
+```{r train and fit glm}
+test<-glm(Diabetes_binary ~ BMI,
+          data = diabetesTrain)
+
+test
+
+
+Diabetes_glmFit1<-train(Diabetes_binary ~ Age,
+                       data = diabetesTrain,
+                       method = "glm",
+                       trControl = trctrl,
+                       metric = "logLoss")
+
+plot(Diabetes_glmFit1)
+
+Diabetes_glmFit2<-train(Diabetes_binary ~ Age*Income,
+                       data = diabetesTrain,
+                       method = "plr",
+                       trControl = trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10,
+                       family = "binomial")
+
+Diabetes_glmFit3<-train(Diabetes_binary ~ Age*Income*Education,
+                       data = diabetesTrain,
+                       method = "glm",
+                       trControl = trctrl,
+                       preProcess = c("center", "scale"),
+                       tuneLength = 10,
+                       family = "binomial")
+
+RMSE(Diabetes_glmFit1,diabetesTrain$Diabetes_binary)
+
+glm_Ttestglm_TestPred<-predict(Diabetes_glmFit1,
+                      newdata = diabetesTest,
+                      type = "raw")
+
+glm_TestPred
+
+confusionMatrix(glm_TestPred,diabetesTest$Diabetes_binary)
+```
+
+
