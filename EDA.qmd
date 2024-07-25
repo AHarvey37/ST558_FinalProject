@@ -39,7 +39,7 @@ The following variables are continuous in the dataset:
 
 |    First we will load in the packages and the raw data.
 
-```{r Libraries and Raw data, warning=FALSE, message=FALSE}
+```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
 library(tidyverse)
 ```
 
@@ -76,26 +76,69 @@ Cleaning1<- rawData|>
 
 
 ```{r Summary Tables}
+# frequency Body Mass Index (actual) by diabetes_binary
 BMIsummary<- Cleaning1|>
-  group_by(Diabetes_binary,BMI)|>
-  count(BMI, name = "Count")
+  count(Diabetes_binary, BMI, name = "Count")
 
-ggplot(BMIsummary,aes(x = BMI, y = Count)) + geom_bar(stat = "identity",position = "dodge", aes(fill = Diabetes_binary))
+ggplot(BMIsummary,aes(x = BMI, y = Count)) + geom_bar(stat = "identity",position = "dodge", aes(fill = Diabetes_binary))+ facet_wrap(~Diabetes_binary) 
 
-
-SmokeHeartSummary<- Cleaning1|>
-  group_by(Diabetes_binary,Smoker,HeartDiseaseorAttack)|>
-  count(Diabetes_binary,Smoker,HeartDiseaseorAttack, name = "count")|>
-  rowid_to_column("Group #")|>
-  mutate(Percent = count/nrow(Cleaning1))
-
-ggplot(SmokeHeartSummary,aes(x=`Group #`, y = Percent, fill = Diabetes_binary)) +
-  geom_bar(stat = "identity")
-
+# General Health  
+# 1 = excellent 2 = very good 3 = good 4 = fair 5 = poor
 HealthSummary<-Cleaning1|>
-  group_by(Diabetes_binary,PhysActivity,Fruits,Veggies,GenHlth)|>
-  count(Diabetes_binary,PhysActivity,Fruits,Veggies,GenHlth)
+  count(Diabetes_binary,GenHlth)
 
+ggplot(HealthSummary, aes(GenHlth,n,colour = Diabetes_binary)) +
+  geom_point(stat = "identity")+
+  geom_smooth(aes(GenHlth,n),stat = "identity")
+
+# Heavy Alcohol Consumpsion 
+# Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week)
+HeartHealthSummary<- Cleaning1|>
+  group_by(Diabetes_binary,HvyAlcoholConsump)|>
+  tally()
+
+ggplot(Cleaning1,aes(PhysHlth,fill = Diabetes_binary)) + geom_bar(position = "dodge")
+
+# General Categories, Age, Education, Income
+#
+# Age: 1 = 18-24, 2 = 25-29, 3 = 30-34, 4 = 35-39, 5 = 40-44, 6 = 45-49, 7 = 50-54, 8 = 55-59, 9 = 60-64, 10 = 65-69, 11 = 70-74, 12 = 75-79, 13 = 80 or older
+# 
+# Education: 1: Did not graduate high school, 2: Graduated high school, 3: Attended college, 4: Graduated college
+# 
+# Income: 1: <$10K, 2: $10K–$15K, 3: $15K–$20K, 4: $20K–$25K, 5: $25K–$35K, 6: $35K–$50K, 7: $50K–$75K, 8: >$75K
+
+GenBox <- Cleaning1|>
+  group_by(Diabetes_binary, Education)|>
+  gather(key = "Category",value = "val", Age,Education,Income )|>
+  select(Diabetes_binary,Category,val)
+
+
+
+ggplot(GenBox, aes(Category,val, fill = Category)) +
+  geom_boxplot()+
+  geom_text(aes(label=val))+
+  facet_wrap(~Diabetes_binary)
+  
+```
+
+## Modeling
+
+chosen will be age education and income
+
+```{r Split Data}
+# set seed for predictability
+set.seed(8)
+
+# Create a Vector to use to split data
+trainingVec <- sample(1:nrow(Cleaning1),
+                      size = nrow(Cleaning1)*.7)
+
+# Split data into training and test sets
+## Training set
+diabetesTrain <- Cleaning1[trainingVec,]
+
+## Test set
+diabetesTest <- Cleaning1[-trainingVec,]
 ```
 
 
