@@ -121,24 +121,7 @@ ggplot(GenBox, aes(Category,val, fill = Category)) +
   
 ```
 
-## Modeling
 
-chosen will be age education and income
-
-```{r Split Data}
-# set seed for predictability
-set.seed(8)
-
-# Create a Vector to use to split data
-trainingVec <- sample(1:nrow(Cleaning1),
-                      size = nrow(Cleaning1)*.7)
-
-# Split data into training and test sets
-## Training set
-diabetesTrain <- Cleaning1[trainingVec,]
-
-## Test set
-diabetesTest <- Cleaning1[-trainingVec,]
 ```
 
 

@@ -5,23 +5,51 @@ format: html
 editor: visual
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
+```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
+library(tidyverse)
 ```
 
-You can add options to executable code like this
 
-```{r}
-#| echo: false
-2 * 2
+```{r Read in Data and Set Factors}
+rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
+
+#create a new data frame for cleaning and converts all binary variables into factors
+cleaned<- rawData|>
+  mutate(Diabetes_binary = as.factor(Diabetes_binary),
+         HighBP = as.factor(HighBP),
+         HighChol = as.factor(HighChol),
+         CholCheck = as.factor(CholCheck),
+         Smoker = as.factor(Smoker),
+         Stroke = as.factor(Stroke),
+         HeartDiseaseorAttack = as.factor(HeartDiseaseorAttack),
+         PhysActivity = as.factor(PhysActivity),
+         Fruits = as.factor(Fruits),
+         Veggies = as.factor(Veggies),
+         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
+         AnyHealthcare = as.factor(AnyHealthcare),
+         NoDocbcCost = as.factor(NoDocbcCost),
+         DiffWalk = as.factor(DiffWalk),
+         Sex = as.factor(Sex)
+         )|>
+  select(Diabetes_binary,Age,Education,Income)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+## Modeling
+
+chosen will be age education and income
+
+```{r Split Data}
+# set seed for predictability
+set.seed(8)
+
+# Create a Vector to use to split data
+trainingVec <- sample(1:nrow(cleaned),
+                      size = nrow(cleaned)*.7)
+
+# Split data into training and test sets
+## Training set
+diabetesTrain <- cleaned[trainingVec,]
+
+## Test set
+diabetesTest <- cleaned[-trainingVec,]
+```
