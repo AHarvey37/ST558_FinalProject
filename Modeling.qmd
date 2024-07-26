@@ -8,6 +8,7 @@ editor: visual
 ```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
 library(tidyverse)
 library(caret)
+library(Metrics)
 ```
 
 
@@ -16,24 +17,21 @@ rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #create a new data frame for cleaning and converts all binary variables into factors
 cleaned<- rawData|>
-  mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("Yes","No")),
-         HighBP = as.factor(HighBP),
-         HighChol = as.factor(HighChol),
-         CholCheck = as.factor(CholCheck),
-         Smoker = as.factor(Smoker),
-         Stroke = as.factor(Stroke),
-         HeartDiseaseorAttack = as.factor(HeartDiseaseorAttack),
-         PhysActivity = as.factor(PhysActivity),
-         Fruits = as.factor(Fruits),
-         Veggies = as.factor(Veggies),
-         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
-         AnyHealthcare = as.factor(AnyHealthcare),
-         NoDocbcCost = as.factor(NoDocbcCost),
-         DiffWalk = as.factor(DiffWalk),
-         Sex = as.factor(Sex)
-         )|>
-  select(Diabetes_binary,Age,Education,Income,PhysHlth,BMI)
+  select(Diabetes_binary,Age,Education,Income,BMI)|>
+  mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
+         Age = as.factor(Age),
+         Education = as.factor(Education),
+         Income = as.factor(Income))
+
 ```
+
+
+# ```{r Create dummy vars}
+# dummies<- dummyVars(~.,data = cleaned,sep=".")
+# cleaned_wDummies<-predict(dummies,newdata = cleaned)|>
+#   as_tibble()|>
+#   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")))
+# ```
 
 ## Modeling
 
@@ -43,16 +41,16 @@ chosen will be age education and income
 # set seed for predictability
 set.seed(8)
 
-# Create a Vector to use to split data
-trainingVec <- sample(1:nrow(cleaned),
-                      size = nrow(cleaned)*.7)
+# Create a Vector to use to split data. Used createdatapartition to help maintain the ratio of diabates positive to diabetes negative
+trainingVec <- createDataPartition(cleaned$Diabetes_binary,
+                                   p = .7,
+                                   list = FALSE)
 
 # Split data into training and test sets
 ## Training set
 diabetesTrain <- cleaned[trainingVec,]
 ## Test set
 diabetesTest <- cleaned[-trainingVec,]
-
 
 ```
 
@@ -69,47 +67,45 @@ trctrl<- trainControl(method = "cv",
 ```
 
 # write a paragraph about log models
+lower the logloss the better, it is used for classification models in machine learning perfect logloss =0. logLoss calculates the actual value of an observation and finds the difference between that actual value and the predicted value. The total logloss for a model is the mean logloss for the model. 
+
+# Write a paragraph about logistic regression models and why use
 
 ```{r train and fit glm}
-test<-glm(Diabetes_binary ~ BMI,
-          data = diabetesTrain)
-
-test
-
-
-Diabetes_glmFit1<-train(Diabetes_binary ~ Age,
+# Generalized Linear Model
+Diabetes_logFit1<-train(Diabetes_binary ~ Age+Income+Education,
                        data = diabetesTrain,
                        method = "glm",
                        trControl = trctrl,
-                       metric = "logLoss")
-
-plot(Diabetes_glmFit1)
-
-Diabetes_glmFit2<-train(Diabetes_binary ~ Age*Income,
-                       data = diabetesTrain,
-                       method = "plr",
-                       trControl = trctrl,
-                       preProcess = c("center", "scale"),
-                       tuneLength = 10,
+                       metric = "logLoss",
                        family = "binomial")
 
-Diabetes_glmFit3<-train(Diabetes_binary ~ Age*Income*Education,
+# Bayes Generalized Linear Model
+Diabetes_logFit2<-train(Diabetes_binary ~ Age+Income+Education,
                        data = diabetesTrain,
-                       method = "glm",
+                       method = "bayesglm",
                        trControl = trctrl,
-                       preProcess = c("center", "scale"),
-                       tuneLength = 10,
+                       metric = "logLoss",
                        family = "binomial")
 
-RMSE(Diabetes_glmFit1,diabetesTrain$Diabetes_binary)
+# Boosted Logistic Regression
+Diabetes_logFit3<-train(Diabetes_binary ~ Age+Income+Education,
+                       data = diabetesTrain,
+                       method = "LogitBoost",
+                       trControl = trctrl,
+                       metric = "logLoss",
+                       family = "binomial",
+                       tuneGrid = expand.grid(nIter = 3)
+                       )
 
-glm_Ttestglm_TestPred<-predict(Diabetes_glmFit1,
-                      newdata = diabetesTest,
-                      type = "raw")
+# Create a Comparison Table
+Diabetes_logFit3$results<-rename(Diabetes_logFit3$results, parameter = nIter)
 
-glm_TestPred
+Comparison <- data.frame(rbind(Diabetes_logFit1$results,Diabetes_logFit2$results,Diabetes_logFit3$results))|>
+  mutate(Model_type = c("GLM","BayesGLM","LogitBoost"))|>
+  select(Model_type,parameter,logLoss,logLossSD)
 
-confusionMatrix(glm_TestPred,diabetesTest$Diabetes_binary)
+Comparison
 ```
 
 

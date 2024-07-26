@@ -108,16 +108,16 @@ ggplot(Cleaning1,aes(PhysHlth,fill = Diabetes_binary)) + geom_bar(position = "do
 # Income: 1: <$10K, 2: $10K–$15K, 3: $15K–$20K, 4: $20K–$25K, 5: $25K–$35K, 6: $35K–$50K, 7: $50K–$75K, 8: >$75K
 
 GenBox <- Cleaning1|>
-  group_by(Diabetes_binary, Education)|>
-  gather(key = "Category",value = "val", Age,Education,Income )|>
-  select(Diabetes_binary,Category,val)
+  group_by(Diabetes_binary)|>
+  pivot_longer(col = c(Age,Education,Income),names_to = "Category", values_to = "level")|>
+  count(Diabetes_binary,Category,level,name = "val")
 
-
-
-ggplot(GenBox, aes(Category,val, fill = Category)) +
+ggplot(GenBox, aes(Diabetes_binary,level, fill = Diabetes_binary)) +
   geom_boxplot()+
-  geom_text(aes(label=val))+
-  facet_wrap(~Diabetes_binary)
+  facet_wrap(~Category)+
+  scale_y_continuous(breaks = c(1:13))+
+  geom_text(aes(label=val))
+  
   
 ```
 
