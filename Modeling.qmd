@@ -8,7 +8,7 @@ editor: visual
 ```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
 library(tidyverse)
 library(caret)
-library(Metrics)
+library(tree)
 ```
 
 
@@ -17,11 +17,12 @@ rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #create a new data frame for cleaning and converts all binary variables into factors
 cleaned<- rawData|>
-  select(Diabetes_binary,Age,Education,Income,BMI)|>
+  select(Diabetes_binary,Age,Education,Income,GenHlth)|>
   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
          Age = as.factor(Age),
          Education = as.factor(Education),
-         Income = as.factor(Income))
+         Income = as.factor(Income),
+         GenHlth = as.factor(GenHlth))
 
 ```
 
@@ -67,13 +68,13 @@ trctrl<- trainControl(method = "cv",
 ```
 
 # write a paragraph about log models
-lower the logloss the better, it is used for classification models in machine learning perfect logloss =0. logLoss calculates the actual value of an observation and finds the difference between that actual value and the predicted value. The total logloss for a model is the mean logloss for the model. 
+lower the logloss the better, it is used for classification models in machine learning perfect logloss = 0. logLoss calculates the actual value of an observation and finds the difference between that actual value and the predicted value. The total logloss for a model is the mean logloss for the model. 
 
 # Write a paragraph about logistic regression models and why use
 
 ```{r train and fit glm}
 # Generalized Linear Model
-Diabetes_logFit1<-train(Diabetes_binary ~ Age+Income+Education,
+Diabetes_logFit1<-train(Diabetes_binary ~ Age+Income+Education+GenHlth,
                        data = diabetesTrain,
                        method = "glm",
                        trControl = trctrl,
@@ -81,7 +82,7 @@ Diabetes_logFit1<-train(Diabetes_binary ~ Age+Income+Education,
                        family = "binomial")
 
 # Bayes Generalized Linear Model
-Diabetes_logFit2<-train(Diabetes_binary ~ Age+Income+Education,
+Diabetes_logFit2<-train(Diabetes_binary ~ Age+Income+Education+GenHlth,
                        data = diabetesTrain,
                        method = "bayesglm",
                        trControl = trctrl,
@@ -89,7 +90,7 @@ Diabetes_logFit2<-train(Diabetes_binary ~ Age+Income+Education,
                        family = "binomial")
 
 # Boosted Logistic Regression
-Diabetes_logFit3<-train(Diabetes_binary ~ Age+Income+Education,
+Diabetes_logFit3<-train(Diabetes_binary ~ Age+Income+Education+GenHlth,
                        data = diabetesTrain,
                        method = "LogitBoost",
                        trControl = trctrl,
@@ -108,4 +109,47 @@ Comparison <- data.frame(rbind(Diabetes_logFit1$results,Diabetes_logFit2$results
 Comparison
 ```
 
+# write paragraph on Classigication trees
+
+```{r Classification trees}
+classTree_Fit<- tree(Diabetes_binary ~ Age+Income+Education+GenHlth,
+                     data = diabetesTrain,
+                     split = "deviance"
+                     )
+# summary(classTree_Fit)
+# plot(classTree_Fit)
+classTree_Predict<-predict(classTree_Fit,
+                           newdata = diabetesTest
+                           )
+
+cart_TreeFit<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+                       data = diabetesTrain,
+                       method = "rpart",
+                       trControl = trctrl,
+                       metric = "logLoss",
+                       #family = "binomial",
+                       tuneGrid = expand.grid(cp = seq(0,1,by=.01))
+                       )
+cart_TreePredict <- predict(cart_TreeFit,
+                            newdata = diabetesTest,
+                            type = "prob")
+cart_TreePredict
+```
+
+
+
+# random forrest
+
+```{r}
+rf_Fit<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+                       data = diabetesTrain,
+                       method = "ranger",
+                       trControl = trctrl,
+                       metric = "logLoss",
+                       #family = "binomial",
+                       tuneGrid = expand.grid(mtry = 3,
+                                              splitrule = "extratrees",
+                                              min.node.size = 100)
+                       )
+```
 
