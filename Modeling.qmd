@@ -17,12 +17,16 @@ rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #create a new data frame for cleaning and converts all binary variables into factors
 cleaned<- rawData|>
-  select(Diabetes_binary,Age,Education,Income,GenHlth)|>
+  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
          Age = as.factor(Age),
-         Education = as.factor(Education),
-         Income = as.factor(Income),
-         GenHlth = as.factor(GenHlth))
+         HighBP = as.factor(HighBP),
+         HighChol = as.factor(HighChol),
+         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
+         Smoker = as.factor(Smoker),
+         PhysActivity = as.factor(PhysActivity),
+         HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),
+         MentHlth=as.factor(MentHlth))
 
 ```
 
@@ -36,7 +40,7 @@ cleaned<- rawData|>
 
 ## Modeling
 
-chosen will be age education and income
+chosen will be age HighBP and HighChol
 
 ```{r Split Data}
 # set seed for predictability
@@ -74,37 +78,37 @@ lower the logloss the better, it is used for classification models in machine le
 
 ```{r train and fit glm}
 # Generalized Linear Model
-Diabetes_logFit1<-train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+Diabetes_logFit1<-train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker,
                        data = diabetesTrain,
                        method = "glm",
                        trControl = trctrl,
                        metric = "logLoss",
                        family = "binomial")
 
-# Bayes Generalized Linear Model
-Diabetes_logFit2<-train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+# Generalized Linear Model
+Diabetes_logFit2<-train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
-                       method = "bayesglm",
+                       method = "glm",
                        trControl = trctrl,
                        metric = "logLoss",
                        family = "binomial")
 
-# Boosted Logistic Regression
-Diabetes_logFit3<-train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+# Generalized Linear Model
+Diabetes_logFit3<-train(Diabetes_binary ~ .,
                        data = diabetesTrain,
-                       method = "LogitBoost",
+                       method = "glm",
                        trControl = trctrl,
                        metric = "logLoss",
                        family = "binomial",
-                       tuneGrid = expand.grid(nIter = 3)
+                       #tuneGrid = expand.grid(nIter = 3)
                        )
 
 # Create a Comparison Table
-Diabetes_logFit3$results<-rename(Diabetes_logFit3$results, parameter = nIter)
+#Diabetes_logFit3$results<-rename(Diabetes_logFit3$results, parameter = nIter)
 
 Comparison <- data.frame(rbind(Diabetes_logFit1$results,Diabetes_logFit2$results,Diabetes_logFit3$results))|>
-  mutate(Model_type = c("GLM","BayesGLM","LogitBoost"))|>
-  select(Model_type,parameter,logLoss,logLossSD)
+  mutate(Model_type = c("1","2","3"))|>
+  select(Model_type,logLoss,logLossSD)
 
 Comparison
 
@@ -114,7 +118,7 @@ Comparison
 # write paragraph on Classigication trees
 
 ```{r Classification trees}
-# classTree_Fit<- tree(Diabetes_binary ~ Age+Income+Education+GenHlth,
+# classTree_Fit<- tree(Diabetes_binary ~                           Age+HighChol+HighBP+HvyAlcoholConsump+Smoker+PhysActivity,
 #                      data = diabetesTrain,
 #                      split = "deviance"
 #                      )
@@ -124,7 +128,7 @@ Comparison
 #                            newdata = diabetesTest
 #                            )
 
-cart_TreeFit<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker,
                        data = diabetesTrain,
                        method = "rpart",
                        trControl = trctrl,
@@ -136,41 +140,40 @@ cart_TreePredict <- predict(cart_TreeFit,
                             newdata = diabetesTest,
                             type = "prob")
 
-cart_TreeFit2<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
-                       method = "ctree",
+                       method = "rpart",
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(mincriterion = 3)
+                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
                        )
 cart_TreePredict2 <- predict(cart_TreeFit2,
                             newdata = diabetesTest,
                             type = "prob")
 
-cart_TreeFit3<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
+cart_TreeFit3<- train(Diabetes_binary ~ .,
                        data = diabetesTrain,
-                       method = "ctree2",
+                       method = "rpart",
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(mincriterion = 3,
-                                              maxdepth = 5)
+                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
                        )
 cart_TreePredict3 <- predict(cart_TreeFit3,
                             newdata = diabetesTest,
                             type = "prob")
 
 
-cart_TreeFit$results[,c("logLoss","logLossSD")]
-cart_TreeFit2$results[,2:3]
-cart_TreeFit3$results[,3:4]
+cart_TreeFit$bestTune
+cart_TreeFit2$bestTune
+cart_TreeFit3$bestTune
 
-Comparison_tree<- data.frame(rbind(cart_TreeFit$results[1:3,c("logLoss","logLossSD")],
-                                   cart_TreeFit2$results[,2:3],
-                                   cart_TreeFit3$results[,3:4]))|>
-  mutate(Model_type = c("rpart","rpart","rpart","ctree","ctree2"))|>
-  select(Model_type,logLoss,logLossSD)
+Comparison_tree<- data.frame(rbind(cart_TreeFit$results,
+                                   cart_TreeFit2$results,
+                                   cart_TreeFit3$results))|>
+  mutate(Model_type = c("1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3"))|>
+  select(Model_type,cp,logLoss,logLossSD)
 
 Comparison_tree
 
@@ -183,43 +186,42 @@ Comparison_tree
 # random forrest explain random forests
 
 ```{r random forests}
-rf_Fit<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
-                       data = diabetesTrain,
-                       method = "ranger",
-                       trControl = trctrl,
-                       metric = "logLoss",
-                       #family = "binomial",
-                       tuneGrid = expand.grid(mtry = 3,
-                                              splitrule = "extratrees",
-                                              min.node.size = 100)
+rf_Fit<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker,
+               data = diabetesTrain,
+               method = "ranger",
+               trControl = trctrl,
+               metric = "logLoss",
+               tuneGrid = expand.grid(mtry = 3,
+                                      splitrule = "extratrees",
+                                      min.node.size = 100)
                        )
 
 rf_Pred<- predict(rf_Fit,
                   newdata = diabetesTest,
                   type = "prob")
 
-rf_Fit2<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
-                       data = diabetesTrain,
-                       method = "Rborist",
-                       trControl = trctrl,
-                       metric = "logLoss",
-                       #family = "binomial",
-                       tuneGrid = expand.grid(predFixed = 2,
-                                              minNode = 5)
+rf_Fit2<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker+PhysActivity+Age,
+                data = diabetesTrain,
+                method = "ranger",
+                trControl = trctrl,
+                metric = "logLoss",
+                tuneGrid = expand.grid(mtry = 3,
+                                       splitrule = "extratrees",
+                                       min.node.size = 100)
                        )
 
 rf_Pred2<- predict(rf_Fit2,
                   newdata = diabetesTest,
                   type = "prob")
 
-rf_Fit3<- train(Diabetes_binary ~ Age+Income+Education+GenHlth,
-                       data = diabetesTrain,
-                       method = "qrf",
-                       trControl = trctrl,
-                       metric = "logLoss",
-                       #family = "binomial",
-                       tuneGrid = expand.grid(predFixed = 2,
-                                              minNode = 5)
+rf_Fit3<- train(Diabetes_binary ~ .,
+                data = diabetesTrain,
+                method = "ranger",
+                trControl = trctrl,
+                metric = "logLoss",
+                tuneGrid = expand.grid(mtry = 3,
+                                       splitrule = "extratrees",
+                                       min.node.size = 100)
                        )
 
 rf_Pred3<- predict(rf_Fit3,
@@ -228,7 +230,56 @@ rf_Pred3<- predict(rf_Fit3,
 
 
 rf_Fit$results
-rf_Fit2$bestTune
+rf_Fit2$results
+rf_Fit3$results
 
+Comparison_forest<- data.frame(
+  rbind(
+    rf_Fit$results[,c("logLoss","logLossSD")],
+    rf_Fit2$results[,c("logLoss","logLossSD")],
+    rf_Fit3$results[,c("logLoss","logLossSD")])|>
+  mutate(Model_type = c("1","2","3"))|>
+  select(Model_type,logLoss,logLossSD))
+
+Comparison_forest
+
+# Best Forest = range
+```
+
+# final model selection
+
+```{r compare best models}
+
+bayesGLMPredict<- predict(Diabetes_logFit2,
+                          newdata = diabetesTest,
+                          type = "prob")
+bayesGLMPredict
+
+cart_TreePredict<-predict(cart_TreeFit,
+                          newdata = diabetesTest,
+                          type = "prob")
+
+cart_TreePredict
+
+rf_Pred<-predict(rf_Fit,
+                 newdata = diabetesTest,
+                 type = "prob")
+
+rf_Pred
+
+Logloss<- function(real,prediction){
+  results<- -1/length(real)*(sum((real*log(prediction)+(1-real)*log(1-prediction))))
+  return(results)
+}
+
+final_compar<-data.frame(rbind(Logloss(rawData$Diabetes_binary,bayesGLMPredict),
+                               Logloss(rawData$Diabetes_binary,cart_TreePredict),
+                               Logloss(rawData$Diabetes_binary,rf_Pred)))|>
+  mutate(BestModel = c("Bayes GLM", "Classification Tree", "Random Forest"))
+
+names(final_compar)<- c("LogLoss","Mehod")
+final_compar
+
+# best model = Classification tree with all variables
 ```
 
