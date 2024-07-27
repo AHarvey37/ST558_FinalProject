@@ -3,9 +3,9 @@ FROM rocker/r-ver:4.4.1
 RUN apt-get update -qq && apt-get install -y libssl-dev libcurl4-gnutls-dev
 
 RUN R -e "install.packages('tidyverse')"
-RUN R -e "install.packages('plumber')"
 RUN R -e "install.packages('caret')"
-RUN R -e "install.packages('ggplot2')"
+RUN R -e "install.packages('plumber')"
+
 
 
 COPY API.R API.R
