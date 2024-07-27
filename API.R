@@ -1,6 +1,9 @@
 library(plumber)
 library(caret)
-rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
+library(ggplot2)
+
+rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+
 cleaned<- rawData|>
   select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
@@ -12,6 +15,26 @@ cleaned<- rawData|>
          PhysActivity = as.factor(PhysActivity),
          HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),
          MentHlth=as.factor(MentHlth))
+
+# set seed for predictability
+set.seed(8)
+
+# Create a Vector to use to split data. Used createdatapartition to help maintain the ratio of diabates positive to diabetes negative
+trainingVec <- createDataPartition(cleaned$Diabetes_binary,
+                                   p = .7,
+                                   list = FALSE)
+
+# Split data into training and test sets
+## Training set
+diabetesTrain <- cleaned[trainingVec,]
+## Test set
+diabetesTest <- cleaned[-trainingVec,]
+
+# make Train Control Variable with 5 fold cross-validation
+trctrl<- trainControl(method = "cv",
+                      number = 5,
+                      classProbs = TRUE,
+                      summaryFunction = mnLogLoss)
 
 
 #Best model
