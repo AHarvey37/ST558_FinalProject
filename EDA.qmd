@@ -9,15 +9,15 @@ editor: visual
 
 This project will use the "diabetes_binary_health_indicators_BRFSS2015" dataset. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:
 
-1. Diabetes_binary (response variable)
-2. HighBP
-3. HighChol
-4. CholCheck
-5. Smoker
-6. Stroke
-7. HeartDiseaseorAttack
-8. PhysActivity
-9. Fruits
+1.  Diabetes_binary (response variable)
+2.  HighBP
+3.  HighChol
+4.  CholCheck
+5.  Smoker
+6.  Stroke
+7.  HeartDiseaseorAttack
+8.  PhysActivity
+9.  Fruits
 10. Veggies
 11. HvyAlcoholConsump
 12. AnyHealthcare
@@ -25,16 +25,10 @@ This project will use the "diabetes_binary_health_indicators_BRFSS2015" dataset.
 14. DiffWalk
 15. Sex
 
-The following variables are continuous in the dataset:
-1. BMI
-2. GenHlth
-3. MentHlth
-4. PhysHlth
-5. Age
-6. Education
-7. Income
+The following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income
 
 # FIX ME
+
 ##describe the purpose of your EDA and ultimate goal of modeling
 
 |    First we will load in the packages and the raw data.
@@ -74,7 +68,6 @@ Cleaning1<- rawData|>
 
 ```
 
-
 ```{r Summary Tables}
 # frequency Body Mass Index (actual) by diabetes_binary
 BMIsummary<- Cleaning1|>
@@ -99,14 +92,6 @@ HeartHealthSummary<- Cleaning1|>
 
 ggplot(Cleaning1,aes(PhysHlth,fill = Diabetes_binary)) + geom_bar(position = "dodge")
 
-# General Categories, Age, Education, Income
-#
-# Age: 1 = 18-24, 2 = 25-29, 3 = 30-34, 4 = 35-39, 5 = 40-44, 6 = 45-49, 7 = 50-54, 8 = 55-59, 9 = 60-64, 10 = 65-69, 11 = 70-74, 12 = 75-79, 13 = 80 or older
-# 
-# Education: 1: Did not graduate high school, 2: Graduated high school, 3: Attended college, 4: Graduated college
-# 
-# Income: 1: <$10K, 2: $10K–$15K, 3: $15K–$20K, 4: $20K–$25K, 5: $25K–$35K, 6: $35K–$50K, 7: $50K–$75K, 8: >$75K
-
 GenBox <- Cleaning1|>
   group_by(Diabetes_binary)|>
   pivot_longer(col = c(Age,Education,Income),names_to = "Category", values_to = "level")|>
@@ -118,11 +103,23 @@ ggplot(GenBox, aes(Diabetes_binary,level, fill = Diabetes_binary)) +
   scale_y_continuous(breaks = c(1:13))+
   geom_text(aes(label=val))
   
-  
+
+Means<- rawData|>
+  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
+  summarise(Diabetes_binary.mean = mean(Diabetes_binary),
+            HighBP.mean = mean(HighBP),
+            HighChol.mean = mean(HighChol),
+            HvyAlcoholConsump.mean = mean(HvyAlcoholConsump),
+            Smoker.mean = mean(Smoker),
+            PhysActivity.mean = mean(PhysActivity),
+            AgeGroup.mean = mean(Age),
+            HeartDiseaseorAttack.mean = mean(HeartDiseaseorAttack),
+            MentHlth.mean = mean(MentHlth))|>
+  pivot_longer(cols = 1:9)
+
+Means
 ```
 
-
-```
-
+\`\`\`
 
 [Click here for the Modeling Page](Modeling.html)

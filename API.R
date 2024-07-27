@@ -1,0 +1,83 @@
+library(plumber)
+library(caret)
+rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
+cleaned<- rawData|>
+  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
+  mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
+         Age = as.factor(Age),
+         HighBP = as.factor(HighBP),
+         HighChol = as.factor(HighChol),
+         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
+         Smoker = as.factor(Smoker),
+         PhysActivity = as.factor(PhysActivity),
+         HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),
+         MentHlth=as.factor(MentHlth))
+
+
+#Best model
+cart_TreeFit3<- train(Diabetes_binary ~ .,
+                      data = diabetesTrain,
+                      method = "rpart",
+                      trControl = trctrl,
+                      metric = "logLoss",
+                      #family = "binomial",
+                      tuneGrid = expand.grid(cp = seq(0,1,by=.1))
+)
+
+# Return info
+#* @param info 
+#* @get /info
+function(){
+  "Name: Andrew Harvey"
+}
+
+
+# Pred end point
+#* @param pred
+#* @get /pred
+function(Diabetes_binary=0.13933302,
+         HighBP=0.42900110,
+         HighChol=0.42412094,
+         HvyAlcoholConsump=0.05619678,
+         Smoker=0.44316856,
+         PhysActivity=0.75654368,
+         Age=8.03211921,
+         HeartDiseaseorAttack=0.09418559,
+         MentHlth=3.18477215){
+  Diabetes_binary=as.numeric(Diabetes_binary)
+  HighBP=as.numeric(HighBP)			
+  HighChol=as.numeric(HighChol)
+  HvyAlcoholConsump=as.numeric(HvyAlcoholConsump)
+  Smoker=as.numeric(Smoker)
+  PhysActivity=as.numeric(PhysActivity)
+  Age=as.numeric(Age)
+  HeartDiseaseorAttack=as.numeric(HeartDiseaseorAttack)
+  MentHlth=as.numeric(MentHlth)
+}
+
+## Test Functions
+
+#Find multiple of two numbers
+#* @param n1 1st number
+#* @param n2 2nd number
+#* @get /mult
+function(n1, n2){
+  as.numeric(n1)*as.numeric(n2)
+}
+
+#Find the sum of 3 numbers
+#* @param n1 1st number
+#* @param n2 2nd number
+#* @param n3 3rd number
+#* @get /add
+function(n1,n2,n3){
+  as.numeric(n1)+as.numeric(n2)+as.numeric(n3)
+}
+
+
+#Print a Test message
+#* @param test
+#* @get /test
+function(){
+  "Hello, this is a test....... this is just a test."
+}
