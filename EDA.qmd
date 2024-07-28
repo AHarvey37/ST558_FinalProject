@@ -5,33 +5,28 @@ format: html
 editor: visual
 ---
 
-## Introduction
+# Exploritory Data Analysis File
 
-This project will use the "diabetes_binary_health_indicators_BRFSS2015" dataset. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:
+## Introduction Section
 
-1.  Diabetes_binary (response variable)
-2.  HighBP
-3.  HighChol
-4.  CholCheck
-5.  Smoker
-6.  Stroke
-7.  HeartDiseaseorAttack
-8.  PhysActivity
-9.  Fruits
-10. Veggies
-11. HvyAlcoholConsump
-12. AnyHealthcare
-13. NoDocbcCost
-14. DiffWalk
-15. Sex
+|   This project will use the "diabetes_binary_health_indicators_BRFSS2015" data set. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does or does not not have diabetes (0 or 1 respectively) or has prediabetes/diabetes (1). The original data set contains 22 variables most of which are categorical. We have limited the variables to those below:
 
-The following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income
+1.  Diabetes_binary (response variable) - This variable illustrates if the subject has or does not have diabetes. 
+2.  HighBP (Categorical) - This is a binary variable describing whether or not the subject has high blood pressure.
+3.  HighChol (Categorical) - This is a binary variable describing whether or not the subject has high cholesterol.
+4.  Smoker (Categorical) - This is a binary variable describing whether or not the subject has smoked at least 100 cigarettes in their lifetime. 100 cigarettes is equal to 5 packs.
+5.  HeartDiseaseorAttack (Categorical) - This is a binary variable describing whether or not the subject has coronary heart disease or myocardial infarction (a heart attack).  
+6.  PhysActivity (Categorical) - This is a binary variable describing whether or not the subject has conducted physical activity (outside of their job) in the past 30 days.
+7.  HvyAlcoholConsump (Categorical) - This is a binary variable describing whether or not the subject, if male, consumes 14 or more alcoholic drinks per week, or if female, consumes 7 or more alcoholic drinks per week. 
+8.  MentHlth - This variable is a scale from 1 to 30 of how many days the subject has had POOR mental health.
+9.  Age (Categorical) - This variable breaks age into 13 levels which are 18-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50-54, 55-59, 60-64, 65-69, 70-74, 75-80, and 80 or older.
 
-# FIX ME
+### Exploritory Data Analysis
 
-##describe the purpose of your EDA and ultimate goal of modeling
+| The purpose of my exploratory data analysis (EDA) was to identify variables that may have some significant relationship to the diabetes_binary variable. That is to say, does a particular variable either have a relationship to the response variable or not. I explored this by making 4 plots that helped illustrate the possible relationship. I also investigated variables that I did not ultimately use and added variables that I did not investigate initially. The ultimate goal of my model will be to determine what combination of the selected variables are accurate indicators of diabetes. 
 
-|    First we will load in the packages and the raw data.
+## Data
+|    First we will load in the packages and the raw data. We then identified categorical variables and their levels by finding unique observations for each variable. Checking for missing values will come next. Finally, variables were converted to factors in order to better display information in the plots. Each plot has a title and a few other visualization adjustments to help the viewer understand. 
 
 ```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
 library(tidyverse)
@@ -49,6 +44,7 @@ for (i in 1:length(rawData)) {
 ```{r Convert variables to factors}
 #create a new data frame for cleaning and converts all binary variables into factors
 Cleaning1<- rawData|>
+  drop_na()|>
   mutate(Diabetes_binary = as.factor(Diabetes_binary),
          HighBP = as.factor(HighBP),
          HighChol = as.factor(HighChol),
@@ -65,59 +61,106 @@ Cleaning1<- rawData|>
          DiffWalk = as.factor(DiffWalk),
          Sex = as.factor(Sex)
          )
-
 ```
+
+
+## Summarizations
+
+| In this section I created 4 summary tables and 4 plots to help illustrate the relation between diabetes_binary and different variables. My initial selection of variables were body mass index (BMI), Mental Health (MentHlth), Heavy Alcohol Consumption (HvyAlcoholConsump), Age, Education, and Income. Ultimately my model used all of these variables except Education and Income.
+
 
 ```{r Summary Tables}
 # frequency Body Mass Index (actual) by diabetes_binary
 BMIsummary<- Cleaning1|>
   count(Diabetes_binary, BMI, name = "Count")
 
-ggplot(BMIsummary,aes(x = BMI, y = Count)) + geom_bar(stat = "identity",position = "dodge", aes(fill = Diabetes_binary))+ facet_wrap(~Diabetes_binary) 
+print(BMIsummary)
 
-# General Health  
-# 1 = excellent 2 = very good 3 = good 4 = fair 5 = poor
+ggplot(BMIsummary,aes(x = BMI, y = Count)) +
+  labs(title = "BMI Summary by diabetes",
+       x = "BMI Value",
+       y = "Frequecy")+
+  theme(plot.title = element_text(hjust = .5))+
+  geom_bar(stat = "identity",position = "dodge", aes(fill = Diabetes_binary))+
+  facet_wrap(~Diabetes_binary) 
+
 HealthSummary<-Cleaning1|>
-  count(Diabetes_binary,GenHlth)
+  count(Diabetes_binary,MentHlth)
 
-ggplot(HealthSummary, aes(GenHlth,n,colour = Diabetes_binary)) +
+print(HealthSummary)
+
+ggplot(HealthSummary, aes(MentHlth,n,colour = Diabetes_binary)) +
+  labs(title = "Mental Health Summary by diabetes",
+       x = "Days of Poor Mental Health",
+       y = "Frequecy")+
+  theme(plot.title = element_text(hjust = .5))+
   geom_point(stat = "identity")+
-  geom_smooth(aes(GenHlth,n),stat = "identity")
+  geom_smooth(aes(MentHlth,n),stat = "identity")
 
 # Heavy Alcohol Consumpsion 
 # Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week)
-HeartHealthSummary<- Cleaning1|>
+
+AlcoholSummary<- Cleaning1|>
   group_by(Diabetes_binary,HvyAlcoholConsump)|>
   tally()
 
-ggplot(Cleaning1,aes(PhysHlth,fill = Diabetes_binary)) + geom_bar(position = "dodge")
+AlcoholSummary
+
+ggplot(Cleaning1,aes(PhysHlth,fill = Diabetes_binary)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Physical Health Summary by diabetes",
+       x = "Days where subject exercised outside of work",
+       y = "Frequecy")+
+  theme(plot.title = element_text(hjust = .5))
+
 
 GenBox <- Cleaning1|>
   group_by(Diabetes_binary)|>
   pivot_longer(col = c(Age,Education,Income),names_to = "Category", values_to = "level")|>
   count(Diabetes_binary,Category,level,name = "val")
 
+GenBox
+
 ggplot(GenBox, aes(Diabetes_binary,level, fill = Diabetes_binary)) +
   geom_boxplot()+
   facet_wrap(~Category)+
   scale_y_continuous(breaks = c(1:13))+
-  geom_text(aes(label=val))
+  geom_text(aes(label=val))+
+  labs(title = "Summary of Age, Education, and Income by diabetes",
+       y = "Levels (Values on Plot = Frequency)")+
+  theme(plot.title = element_text(hjust = .5))
   
 
 Means<- rawData|>
-  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
-  summarise(Diabetes_binary.mean = mean(Diabetes_binary),
-            HighBP.mean = mean(HighBP),
-            HighChol.mean = mean(HighChol),
-            HvyAlcoholConsump.mean = mean(HvyAlcoholConsump),
-            Smoker.mean = mean(Smoker),
-            PhysActivity.mean = mean(PhysActivity),
-            AgeGroup.mean = mean(Age),
-            HeartDiseaseorAttack.mean = mean(HeartDiseaseorAttack),
-            MentHlth.mean = mean(MentHlth))|>
-  pivot_longer(cols = 1:9)
+  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth,BMI)|>
+  summarise(Diabetes_binary.mean = round(mean(Diabetes_binary),digits = 2),
+            HighBP.mean = round(mean(HighBP),digits = 2),
+            HighChol.mean = round(mean(HighChol),digits = 2),
+            HvyAlcoholConsump.mean = round(mean(HvyAlcoholConsump),digits = 2),
+            Smoker.mean = round(mean(Smoker),digits = 2),
+            PhysActivity.mean = round(mean(PhysActivity),digits = 2),
+            AgeGroup.mean = round(mean(Age),digits = 2),
+            HeartDiseaseorAttack.mean = round(mean(HeartDiseaseorAttack),digits = 2),
+            MentHlth.mean = round(mean(MentHlth),digits = 2),
+            BMI.mean = round(mean(BMI),digits = 2))|>
+  pivot_longer(cols = 1:10,names_to = "Variable")
 
 Means
+
+ggplot(Means,aes(x=Variable,y=value))+
+  geom_bar(stat = "identity", position = "dodge")+ 
+  labs(title = "Average by Final Selected Variables",
+       x = "Variable",
+       y = "Mean")+
+  theme(plot.title = element_text(hjust = .5))+
+  geom_text(aes(label = value),
+            vjust = -.5)+
+  theme(axis.text.x = element_text(angle = 15,
+                                   vjust = 1.25,
+                                   hjust = 1,
+                                   size = 8))
+
+
 ```
 
 \`\`\`

@@ -17,7 +17,7 @@ rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #create a new data frame for cleaning and converts all binary variables into factors
 cleaned<- rawData|>
-  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
+  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth,BMI)|>
   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
          Age = as.factor(Age),
          HighBP = as.factor(HighBP),
@@ -71,7 +71,7 @@ lower the logloss the better, it is used for classification models in machine le
 
 ```{r train and fit glm}
 # Generalized Linear Model
-Diabetes_logFit1<-train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker,
+Diabetes_logFit1<-train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                        data = diabetesTrain,
                        method = "glm",
                        trControl = trctrl,
@@ -79,7 +79,7 @@ Diabetes_logFit1<-train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smok
                        family = "binomial")
 
 # Generalized Linear Model
-Diabetes_logFit2<-train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker+PhysActivity+Age,
+Diabetes_logFit2<-train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
                        method = "glm",
                        trControl = trctrl,
@@ -121,7 +121,7 @@ Comparison
 #                            newdata = diabetesTest
 #                            )
 
-cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker,
+cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                        data = diabetesTrain,
                        method = "rpart",
                        trControl = trctrl,
@@ -133,7 +133,7 @@ cart_TreePredict <- predict(cart_TreeFit,
                             newdata = diabetesTest,
                             type = "prob")
 
-cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker+PhysActivity+Age,
+cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
                        method = "rpart",
                        trControl = trctrl,
@@ -179,7 +179,7 @@ Comparison_tree
 # random forrest explain random forests
 
 ```{r random forests}
-rf_Fit<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker,
+rf_Fit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                data = diabetesTrain,
                method = "ranger",
                trControl = trctrl,
@@ -193,7 +193,7 @@ rf_Pred<- predict(rf_Fit,
                   newdata = diabetesTest,
                   type = "prob")
 
-rf_Fit2<- train(Diabetes_binary ~ HighBP+HighChol+HvyAlcoholConsump+Smoker+PhysActivity+Age,
+rf_Fit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                 data = diabetesTrain,
                 method = "ranger",
                 trControl = trctrl,

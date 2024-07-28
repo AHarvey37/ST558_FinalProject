@@ -52,7 +52,8 @@ cart_TreeFit3<- train(Diabetes_binary ~ .,
 #* @get /info
 function(){
   list(Name = "Andrew Harvey",
-       Links = "google.com")
+       EDA = "https://aharvey37.github.io/ST558_FinalProject/EDA.html",
+       Model = "https://aharvey37.github.io/ST558_FinalProject/Modeling.html")
 }
 
 
