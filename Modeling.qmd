@@ -31,16 +31,9 @@ cleaned<- rawData|>
 ```
 
 
-# ```{r Create dummy vars}
-# dummies<- dummyVars(~.,data = cleaned,sep=".")
-# cleaned_wDummies<-predict(dummies,newdata = cleaned)|>
-#   as_tibble()|>
-#   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")))
-# ```
-
 ## Modeling
 
-chosen will be age HighBP and HighChol
+
 
 ```{r Split Data}
 # set seed for predictability
@@ -253,19 +246,19 @@ Comparison_forest
 bayesGLMPredict<- predict(Diabetes_logFit2,
                           newdata = diabetesTest,
                           type = "prob")
-bayesGLMPredict
+#bayesGLMPredict
 
 cart_TreePredict<-predict(cart_TreeFit,
                           newdata = diabetesTest,
                           type = "prob")
 
-cart_TreePredict
+#cart_TreePredict
 
 rf_Pred<-predict(rf_Fit,
                  newdata = diabetesTest,
                  type = "prob")
 
-rf_Pred
+#rf_Pred
 
 Logloss<- function(real,prediction){
   results<- -1/length(real)*(sum((real*log(prediction)+(1-real)*log(1-prediction))))
