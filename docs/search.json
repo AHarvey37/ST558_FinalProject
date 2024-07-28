@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "EDA.html",
-    "href": "EDA.html",
-    "title": "EDA",
-    "section": "",
-    "text": "This project will use the “diabetes_binary_health_indicators_BRFSS2015” dataset. According Kaggle.com this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:\n\nDiabetes_binary (response variable)\nHighBP\nHighChol\nCholCheck\nSmoker\nStroke\nHeartDiseaseorAttack\nPhysActivity\nFruits\nVeggies\nHvyAlcoholConsump\nAnyHealthcare\nNoDocbcCost\nDiffWalk\nSex\n\nThe following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income"
-  },
-  {
-    "objectID": "EDA.html#introduction",
-    "href": "EDA.html#introduction",
-    "title": "EDA",
-    "section": "",
-    "text": "This project will use the “diabetes_binary_health_indicators_BRFSS2015” dataset. According Kaggle.com this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:\n\nDiabetes_binary (response variable)\nHighBP\nHighChol\nCholCheck\nSmoker\nStroke\nHeartDiseaseorAttack\nPhysActivity\nFruits\nVeggies\nHvyAlcoholConsump\nAnyHealthcare\nNoDocbcCost\nDiffWalk\nSex\n\nThe following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income"
-  },
-  {
     "objectID": "Modeling.html",
     "href": "Modeling.html",
     "title": "Modeling",
@@ -26,5 +12,19 @@
     "title": "Modeling",
     "section": "Modeling",
     "text": "Modeling\n\n# set seed for predictability\nset.seed(8)\n\n# Create a Vector to use to split data. Used createdatapartition to help maintain the ratio of diabates positive to diabetes negative\ntrainingVec &lt;- createDataPartition(cleaned$Diabetes_binary,\n                                   p = .7,\n                                   list = FALSE)\n\n# Split data into training and test sets\n## Training set\ndiabetesTrain &lt;- cleaned[trainingVec,]\n## Test set\ndiabetesTest &lt;- cleaned[-trainingVec,]"
+  },
+  {
+    "objectID": "EDA.html",
+    "href": "EDA.html",
+    "title": "EDA",
+    "section": "",
+    "text": "This project will use the “diabetes_binary_health_indicators_BRFSS2015” dataset. According Kaggle.com this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:\n\nDiabetes_binary (response variable)\nHighBP\nHighChol\nCholCheck\nSmoker\nStroke\nHeartDiseaseorAttack\nPhysActivity\nFruits\nVeggies\nHvyAlcoholConsump\nAnyHealthcare\nNoDocbcCost\nDiffWalk\nSex\n\nThe following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income"
+  },
+  {
+    "objectID": "EDA.html#introduction",
+    "href": "EDA.html#introduction",
+    "title": "EDA",
+    "section": "",
+    "text": "This project will use the “diabetes_binary_health_indicators_BRFSS2015” dataset. According Kaggle.com this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:\n\nDiabetes_binary (response variable)\nHighBP\nHighChol\nCholCheck\nSmoker\nStroke\nHeartDiseaseorAttack\nPhysActivity\nFruits\nVeggies\nHvyAlcoholConsump\nAnyHealthcare\nNoDocbcCost\nDiffWalk\nSex\n\nThe following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income"
   }
 ]
