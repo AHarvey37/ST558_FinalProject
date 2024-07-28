@@ -2,7 +2,7 @@ library(plumber)
 library(caret)
 library(tidyverse)
 
-rawData <- read.csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
+rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 
 cleaned<- rawData|>
   select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
@@ -51,7 +51,8 @@ cart_TreeFit3<- train(Diabetes_binary ~ .,
 #* @param info 
 #* @get /info
 function(){
-  "Name: Andrew Harvey"
+  list(Name = "Andrew Harvey",
+       Links = "google.com")
 }
 
 
@@ -67,15 +68,15 @@ function(Diabetes_binary=0.13933302,
          Age=8.03211921,
          HeartDiseaseorAttack=0.09418559,
          MentHlth=3.18477215){
-  Diabetes_binary=as.numeric(Diabetes_binary)
-  HighBP=as.numeric(HighBP)			
-  HighChol=as.numeric(HighChol)
-  HvyAlcoholConsump=as.numeric(HvyAlcoholConsump)
-  Smoker=as.numeric(Smoker)
-  PhysActivity=as.numeric(PhysActivity)
-  Age=as.numeric(Age)
-  HeartDiseaseorAttack=as.numeric(HeartDiseaseorAttack)
-  MentHlth=as.numeric(MentHlth)
+  list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
+  HighBP.Mean=as.numeric(HighBP),
+  HighChol.Mean=as.numeric(HighChol),
+  HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
+  Smoker.Mean=as.numeric(Smoker),
+  PhysActivity.Mean=as.numeric(PhysActivity),
+  Age.Mean=as.numeric(Age),
+  HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
+  MentHlth.Mean=as.numeric(MentHlth))
 }
 
 ## Test Functions
@@ -84,8 +85,10 @@ function(Diabetes_binary=0.13933302,
 #* @param n1 1st number
 #* @param n2 2nd number
 #* @get /mult
-function(n1, n2){
-  as.numeric(n1)*as.numeric(n2)
+function(n1=1, n2=1, msg="",msg2=""){
+  result<-as.numeric(n1)*as.numeric(n2)
+  list(msg = paste0("When n1 = ",n1," and n2 = ", n2 ),
+       msg2 = paste0("The result = ", result ))
 }
 
 #Find the sum of 3 numbers
@@ -93,8 +96,9 @@ function(n1, n2){
 #* @param n2 2nd number
 #* @param n3 3rd number
 #* @get /add
-function(n1,n2,n3){
-  as.numeric(n1)+as.numeric(n2)+as.numeric(n3)
+function(n1=1,n2=2,n3=3){
+  result<- as.numeric(n1)+as.numeric(n2)+as.numeric(n3)
+  list(msg = paste0("When n1 = ",n1,", n2 = ",n2,", and n3 = '\n'", "The result = ", result ))
 }
 
 

@@ -8,7 +8,7 @@ RUN R -e "install.packages('plumber')"
 
 
 
-
+COPY diabetes_binary_health_indicators_BRFSS2015.csv diabetes_binary_health_indicators_BRFSS2015.csv
 COPY myAPI.R myAPI.R
 
 EXPOSE 8000
