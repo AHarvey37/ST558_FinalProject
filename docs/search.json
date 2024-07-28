@@ -12,5 +12,19 @@
     "title": "EDA",
     "section": "",
     "text": "This project will use the “diabetes_binary_health_indicators_BRFSS2015” dataset. According Kaggle.com this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:\n\nDiabetes_binary (response variable)\nHighBP\nHighChol\nCholCheck\nSmoker\nStroke\nHeartDiseaseorAttack\nPhysActivity\nFruits\nVeggies\nHvyAlcoholConsump\nAnyHealthcare\nNoDocbcCost\nDiffWalk\nSex\n\nThe following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income"
+  },
+  {
+    "objectID": "Modeling.html",
+    "href": "Modeling.html",
+    "title": "Modeling",
+    "section": "",
+    "text": "library(tidyverse)\nlibrary(caret)\nlibrary(tree)\nrawData &lt;- read.csv(\"./diabetes_binary_health_indicators_BRFSS2015.csv\")\n\n#create a new data frame for cleaning and converts all binary variables into factors\ncleaned&lt;- rawData|&gt;\n  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|&gt;\n  mutate(Diabetes_binary = factor(Diabetes_binary,labels = c(\"No\",\"Yes\")),\n         Age = as.factor(Age),\n         HighBP = as.factor(HighBP),\n         HighChol = as.factor(HighChol),\n         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),\n         Smoker = as.factor(Smoker),\n         PhysActivity = as.factor(PhysActivity),\n         HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),\n         MentHlth=as.factor(MentHlth))"
+  },
+  {
+    "objectID": "Modeling.html#modeling",
+    "href": "Modeling.html#modeling",
+    "title": "Modeling",
+    "section": "Modeling",
+    "text": "Modeling\n\n# set seed for predictability\nset.seed(8)\n\n# Create a Vector to use to split data. Used createdatapartition to help maintain the ratio of diabates positive to diabetes negative\ntrainingVec &lt;- createDataPartition(cleaned$Diabetes_binary,\n                                   p = .7,\n                                   list = FALSE)\n\n# Split data into training and test sets\n## Training set\ndiabetesTrain &lt;- cleaned[trainingVec,]\n## Test set\ndiabetesTest &lt;- cleaned[-trainingVec,]"
   }
 ]
