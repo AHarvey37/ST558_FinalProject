@@ -2,7 +2,7 @@ library(plumber)
 library(caret)
 library(tidyverse)
 
-rawData <- read.csv("..diabetes_binary_health_indicators_BRFSS2015.csv")
+rawData <- read.csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
 
 cleaned<- rawData|>
   select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
