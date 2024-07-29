@@ -104,11 +104,12 @@ function(Diabetes_binary=1,
               HeartDiseaseorAttack.Most.Freq=as.numeric(HeartDiseaseorAttack),
               MentHlth.Mean=as.numeric(MentHlth),
               BMI.Mean = as.numeric(BMI),
-              Model_Results = mod_logloss)
+              Model_Results = mod_logloss,
+              Additional.Test.Function.endpoints = paste("/mult ", "/add" , "/test" ) )
   )
 }
 
-## Test Functions
+## Test Function Calls
 
 #Find multiple of two numbers
 #* @param n1 1st number
