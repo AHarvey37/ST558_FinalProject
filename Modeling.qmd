@@ -5,6 +5,25 @@ format: html
 editor: visual
 ---
 
+# Modeling File
+
+## Introduction Section
+
+|   This project will use the "diabetes_binary_health_indicators_BRFSS2015" data set. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does or does not not have diabetes (0 or 1 respectively) or has pre-diabetes/diabetes (1). The original data set contains 22 variables most of which are categorical. We have limited the variables to those below:
+
+1.  Diabetes_binary (response variable) - This variable illustrates if the subject has or does not have diabetes. 
+2.  HighBP (Categorical) - This is a binary variable describing whether or not the subject has high blood pressure.
+3.  HighChol (Categorical) - This is a binary variable describing whether or not the subject has high cholesterol.
+4.  Smoker (Categorical) - This is a binary variable describing whether or not the subject has smoked at least 100 cigarettes in their lifetime. 100 cigarettes is equal to 5 packs.
+5.  HeartDiseaseorAttack (Categorical) - This is a binary variable describing whether or not the subject has coronary heart disease or myocardial infarction (a heart attack).  
+6.  PhysActivity (Categorical) - This is a binary variable describing whether or not the subject has conducted physical activity (outside of their job) in the past 30 days.
+7.  HvyAlcoholConsump (Categorical) - This is a binary variable describing whether or not the subject, if male, consumes 14 or more alcoholic drinks per week, or if female, consumes 7 or more alcoholic drinks per week. 
+8.  MentHlth - This variable is a scale from 1 to 30 of how many days the subject has had POOR mental health.
+9.  Age (Categorical) - This variable breaks age into 13 levels which are 18-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50-54, 55-59, 60-64, 65-69, 70-74, 75-80, and 80 or older.
+
+
+|    Our first steps are to load the applicable libraries. In this file we will be modeling using the caret package and we will also use the tidyverse package, specifically dplyr, to manipulate our data. Our second step will be to load in our raw data and convert the variables we will be using to factors and remove the unused variables. 
+
 ```{r Libraries and Raw data, warning=FALSE, message=FALSE,}
 library(tidyverse)
 library(caret)
@@ -27,12 +46,12 @@ cleaned<- rawData|>
          PhysActivity = as.factor(PhysActivity),
          HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),
          MentHlth=as.factor(MentHlth))
-
 ```
 
 
-## Modeling
+### Splitting Data
 
+|   Our next step will be to split the data into a training set and a test set. We will set the seed to 8 to allow for reproduction by others. We then split the data using the \createdatapartition function from the caret package. The split will take 70% of the data and place it into the training set and then the other 30% into the test set. We will use the training set to train our competing models and then use the test set to predict the response variable of the model, diabetes_binary. 
 
 
 ```{r Split Data}
@@ -53,9 +72,10 @@ diabetesTest <- cleaned[-trainingVec,]
 ```
 
 
-# write a paragraph here about log loss
-mnLogLoss computes the minus log-likelihood of the multinomial distribution (without the constant term): $$-logLoss = \frac{-1}{n}\sum_{i=1}^{n}\sum_{j=1}^{C}y_{ij}log(p_{ij})$$
+### LogLoss
 
+| For this project we will analyze the logloss of our models rather than looking at the prediction outcome of the model. Logloss is a measurement of prediction used in machine learning. In essence logloss measures how accurate a prediction is to the actual resulting value. The closer the prediction is to the actual value the lower the logloss, lower logloss is preferred. Conversely, the further the prediction is from the actual value the higher the logloss. For example, if a prediction value was 0.95 and the actual was 1 the logloss would be very low, around 0.05, and thus very good. Logloss is computed as such: $$-logLoss = -\frac{1}{N}\sum_{i=1}^{N}\sum_{j=1}^{C}y_{ij}log(p_{ij})$$
+This may be a better metric to use in certain cases due to the final logloss. The final logloss is the averaged logloss across the model. This will tell the user how well the model performed overall, with the lower the number the better the model. 
 ```{r set train control and 5 fold cross-validation using mnLogLoss}
 # make Train Control Variable with 5 fold cross-validation
 trctrl<- trainControl(method = "cv",

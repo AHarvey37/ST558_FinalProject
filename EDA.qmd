@@ -9,7 +9,7 @@ editor: visual
 
 ## Introduction Section
 
-|   This project will use the "diabetes_binary_health_indicators_BRFSS2015" data set. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does or does not not have diabetes (0 or 1 respectively) or has prediabetes/diabetes (1). The original data set contains 22 variables most of which are categorical. We have limited the variables to those below:
+|   This project will use the "diabetes_binary_health_indicators_BRFSS2015" data set. According [Kaggle.com](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data) this data set contains 253,680 observation where the response variable is whether the observed individual does or does not not have diabetes (0 or 1 respectively) or has pre-diabetes/diabetes (1). The original data set contains 22 variables most of which are categorical. We have limited the variables to those below:
 
 1.  Diabetes_binary (response variable) - This variable illustrates if the subject has or does not have diabetes. 
 2.  HighBP (Categorical) - This is a binary variable describing whether or not the subject has high blood pressure.
