@@ -145,7 +145,7 @@ cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smo
 cart_TreePredict <- predict(cart_TreeFit,
                             newdata = diabetesTest,
                             type = "prob")
-cart_TreePredict
+head(cart_TreePredict)
 
 cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
@@ -158,6 +158,7 @@ cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Sm
 cart_TreePredict2 <- predict(cart_TreeFit2,
                             newdata = diabetesTest,
                             type = "prob")
+head(cart_TreePredict2)
 
 cart_TreeFit3<- train(Diabetes_binary ~ .,
                        data = diabetesTrain,
@@ -170,6 +171,7 @@ cart_TreeFit3<- train(Diabetes_binary ~ .,
 cart_TreePredict3 <- predict(cart_TreeFit3,
                             newdata = diabetesTest,
                             type = "prob")
+head(cart_TreePredict3)
 
 
 cart_TreeFit$results
@@ -275,7 +277,7 @@ cart_TreePredict<-predict(cart_TreeFit,
 
 cart_TreePredict
 
-rf_Pred<-predict(rf_Fit,
+rf_Pred<-predict(rf_Fit2,
                  newdata = diabetesTest,
                  type = "prob")|>
   as_tibble()
@@ -303,6 +305,6 @@ final_compar<-data.frame(rbind(Logloss(rawData$Diabetes_binary,bayesGLMPredict),
 names(final_compar)<- c("LogLoss","Mehod")
 final_compar
 
-# best model = Classification tree with all variables
+# best model = Random Forest with 7 variables
 ```
 

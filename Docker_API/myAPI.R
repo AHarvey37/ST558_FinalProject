@@ -11,29 +11,30 @@ function(){
   list(Name = "Andrew Harvey",
        EDA = "https://aharvey37.github.io/ST558_FinalProject/EDA.html",
        Model = "https://aharvey37.github.io/ST558_FinalProject/Modeling.html",
-       Note = "When running /pred endpoint it may take between 3 and 5 min to load due to building forest.")
+       Note = "When running /pred endpoint it may take between 2 and 5 min to load due to building forest.")
 }
 
 
 # Pred end point
 #* @param pred
 #* @get /pred
-function(Diabetes_binary=0.13933302,
-         HighBP=0.42900110,
-         HighChol=0.42412094,
-         HvyAlcoholConsump=0.05619678,
-         Smoker=0.44316856,
+function(Diabetes_binary=1,
+         HighBP=0,
+         HighChol=0,
+         HvyAlcoholConsump=0,
+         Smoker=0,
          PhysActivity=0.75654368,
-         Age=8.03211921,
-         HeartDiseaseorAttack=0.09418559,
-         MentHlth=3.18477215){
+         Age=8,
+         HeartDiseaseorAttack=0,
+         MentHlth=3.18477215,
+         BMI=28.38){
 
   # Read in data
   rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
   
   # Clean Data for model
   cleaned<- rawData|>
-    select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
+    select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth,BMI)|>
     mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
            Age = as.factor(Age),
            HighBP = as.factor(HighBP),
@@ -65,7 +66,7 @@ function(Diabetes_binary=0.13933302,
   
   
   #Best model
-  rf_Fit3<- train(Diabetes_binary ~ .,
+  rf_Fit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                   data = diabetesTrain,
                   method = "ranger",
                   trControl = trctrl,
@@ -73,13 +74,13 @@ function(Diabetes_binary=0.13933302,
                   tuneGrid = expand.grid(mtry = 3,
                                          splitrule = "extratrees",
                                          min.node.size = 100)
-                  )
+  )
   
   # Print Logloss of model
-  rf_Fit3$results
+  rf_Fit2$results
   
   # Make prediction
-  rf_Pred3<- predict(rf_Fit3,
+  rf_Pred2<- predict(rf_Fit2,
                      newdata = diabetesTest,
                      type = "prob")
   
@@ -91,18 +92,19 @@ function(Diabetes_binary=0.13933302,
   
   
   # Find and display Log Loss of prediction 
-  mod_logloss<- paste0("The best model's logloss is ",Logloss(rawData$Diabetes_binary,rf_Pred3))
+  mod_logloss<- paste0("The best model's logloss is ",Logloss(rawData$Diabetes_binary,rf_Pred2))
   
-  return(list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
-              HighBP.Mean=as.numeric(HighBP),
-              HighChol.Mean=as.numeric(HighChol),
-              HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
-              Smoker.Mean=as.numeric(Smoker),
+  return(list(Diabetes_binary.Most.Freq=as.numeric(Diabetes_binary),
+              HighBP.Most.Freq=as.numeric(HighBP),
+              HighCholMost.Freq=as.numeric(HighChol),
+              HvyAlcoholConsumpMost.Freq=as.numeric(HvyAlcoholConsump),
+              SmokerMost.Freq=as.numeric(Smoker),
               PhysActivity.Mean=as.numeric(PhysActivity),
-              Age.Mean=as.numeric(Age),
-              HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
+              Age.Most.Freq=as.numeric(Age),
+              HeartDiseaseorAttack.Most.Freq=as.numeric(HeartDiseaseorAttack),
               MentHlth.Mean=as.numeric(MentHlth),
-              mod_logloss)
+              BMI.Mean = as.numeric(BMI),
+              Model_Results = mod_logloss)
   )
 }
 
