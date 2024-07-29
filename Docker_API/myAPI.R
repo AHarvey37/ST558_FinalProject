@@ -14,7 +14,6 @@ function(){
 }
 
 
-
 # Pred end point
 #* @param pred
 #* @get /pred
@@ -36,52 +35,72 @@ function(Diabetes_binary=0.13933302,
        Age.Mean=as.numeric(Age),
        HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
        MentHlth.Mean=as.numeric(MentHlth))
+  
+  # Read in data
+  rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+  
+  # Clean Data for model
+  cleaned<- rawData|>
+    select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
+    mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
+           Age = as.factor(Age),
+           HighBP = as.factor(HighBP),
+           HighChol = as.factor(HighChol),
+           HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
+           Smoker = as.factor(Smoker),
+           PhysActivity = as.factor(PhysActivity),
+           HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),
+           MentHlth=as.factor(MentHlth))
+  
+  # set seed 
+  set.seed(8)
+
+  # Create a Vector to use to split data. Used createdatapartition to help maintain the ratio of diabates positive to diabetes negative
+  trainingVec <- createDataPartition(cleaned$Diabetes_binary,
+                                     p = .7,
+                                     list = FALSE)
+  
+  # Split data into training and test sets
+  ## Training set
+  diabetesTrain <- cleaned[trainingVec,]
+  ## Test set
+  diabetesTest <- cleaned[-trainingVec,]
+  # make Train Control Variable with 5 fold cross-validation
+  trctrl<- trainControl(method = "cv",
+                        number = 5,
+                        classProbs = TRUE,
+                        summaryFunction = mnLogLoss)
+  
+  
+  #Best model
+  rf_Fit3<- train(Diabetes_binary ~ .,
+                  data = diabetesTrain,
+                  method = "ranger",
+                  trControl = trctrl,
+                  metric = "logLoss",
+                  tuneGrid = expand.grid(mtry = 3,
+                                         splitrule = "extratrees",
+                                         min.node.size = 100)
+                  )
+  
+  # Print Logloss of model
+  rf_Fit3$results
+  
+  # Make prediction
+  rf_Pred3<- predict(rf_Fit3,
+                     newdata = diabetesTest,
+                     type = "prob")
+  
+  # LogLoss function
+  Logloss<- function(real,prediction){
+    results<- -1/length(real)*sum(real*log10(prediction)+(1-real)*log10(1-prediction))
+    return(results)
+  }
+  
+  
+  # Find and display Log Loss of prediction 
+  Logloss(rawData$Diabetes_binary,cart_TreePredict)
 }
-rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
-
-cleaned<- rawData|>
-  select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)|>
-  mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
-         Age = as.factor(Age),
-         HighBP = as.factor(HighBP),
-         HighChol = as.factor(HighChol),
-         HvyAlcoholConsump = as.factor(HvyAlcoholConsump),
-         Smoker = as.factor(Smoker),
-         PhysActivity = as.factor(PhysActivity),
-         HeartDiseaseorAttack=as.factor(HeartDiseaseorAttack),
-         MentHlth=as.factor(MentHlth))
-
-# set seed for predictability
-set.seed(8)
-
-# Create a Vector to use to split data. Used createdatapartition to help maintain the ratio of diabates positive to diabetes negative
-trainingVec <- createDataPartition(cleaned$Diabetes_binary,
-                                   p = .7,
-                                   list = FALSE)
-
-# Split data into training and test sets
-## Training set
-diabetesTrain <- cleaned[trainingVec,]
-## Test set
-diabetesTest <- cleaned[-trainingVec,]
-
-# make Train Control Variable with 5 fold cross-validation
-trctrl<- trainControl(method = "cv",
-                      number = 5,
-                      classProbs = TRUE,
-                      summaryFunction = mnLogLoss)
-
-
-#Best model
-rf_Fit3<- train(Diabetes_binary ~ .,
-                data = diabetesTrain,
-                method = "ranger",
-                trControl = trctrl,
-                metric = "logLoss",
-                tuneGrid = expand.grid(mtry = 3,
-                                       splitrule = "extratrees",
-                                       min.node.size = 100)
-)
 
 ## Test Functions
 
