@@ -139,11 +139,12 @@ cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smo
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(cp = seq(0,5,by=.1))
+                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
                        )
 cart_TreePredict <- predict(cart_TreeFit,
                             newdata = diabetesTest,
                             type = "prob")
+cart_TreePredict
 
 cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
@@ -151,7 +152,7 @@ cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Sm
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(cp = seq(0,5,by=.1))
+                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
                        )
 cart_TreePredict2 <- predict(cart_TreeFit2,
                             newdata = diabetesTest,
@@ -163,7 +164,7 @@ cart_TreeFit3<- train(Diabetes_binary ~ .,
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(cp = seq(0,5,by=.1))
+                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
                        )
 cart_TreePredict3 <- predict(cart_TreeFit3,
                             newdata = diabetesTest,
@@ -174,10 +175,10 @@ cart_TreeFit$results
 cart_TreeFit2$results
 cart_TreeFit3$results
 
-Comparison_tree<- data.frame(rbind(cart_TreeFit$results,
-                                   cart_TreeFit2$results,
-                                   cart_TreeFit3$results))|>
-  # mutate(Model_type = c("1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3"))|>
+Comparison_tree<- data.frame(rbind(cart_TreeFit$results[1:3,],
+                                   cart_TreeFit2$results[1:3,],
+                                   cart_TreeFit3$results[1:3,]))|>
+   mutate(Model_type = c("1","1","1","2","2","2","3","3","3"))|>
   select(Model_type,cp,logLoss,logLossSD)
 
 Comparison_tree
@@ -199,7 +200,7 @@ rf_Fit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                method = "ranger",
                trControl = trctrl,
                metric = "logLoss",
-               tuneGrid = expand.grid(mtry = 5,
+               tuneGrid = expand.grid(mtry = 3,
                                       splitrule = "extratrees",
                                       min.node.size = 100)
                        )
@@ -213,7 +214,7 @@ rf_Fit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+P
                 method = "ranger",
                 trControl = trctrl,
                 metric = "logLoss",
-                tuneGrid = expand.grid(mtry = 5,
+                tuneGrid = expand.grid(mtry = 3,
                                        splitrule = "extratrees",
                                        min.node.size = 100)
                        )
@@ -227,7 +228,7 @@ rf_Fit3<- train(Diabetes_binary ~ .,
                 method = "ranger",
                 trControl = trctrl,
                 metric = "logLoss",
-                tuneGrid = expand.grid(mtry = 5,
+                tuneGrid = expand.grid(mtry = 3,
                                        splitrule = "extratrees",
                                        min.node.size = 100)
                        )
@@ -262,23 +263,26 @@ Comparison_forest
 
 bayesGLMPredict<- predict(Diabetes_logFit2,
                           newdata = diabetesTest,
-                          type = "prob")
-#bayesGLMPredict
+                          type = "prob")|>
+  as_tibble()
+bayesGLMPredict
 
 cart_TreePredict<-predict(cart_TreeFit,
                           newdata = diabetesTest,
-                          type = "prob")
+                          type = "prob")|>
+  as_tibble()
 
-#cart_TreePredict
+cart_TreePredict
 
 rf_Pred<-predict(rf_Fit,
                  newdata = diabetesTest,
-                 type = "prob")
+                 type = "prob")|>
+  as_tibble()
 
-#rf_Pred
+rf_Pred
 
 Logloss<- function(real,prediction){
-  results<- -1/length(real)*(sum((real*log(prediction)+(1-real)*log(1-prediction))))
+  results<- -1/length(real)*(sum(real*log(prediction)+(1-real)*log(1-prediction)))
   return(results)
 }
 
