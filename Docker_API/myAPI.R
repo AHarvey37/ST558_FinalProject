@@ -27,16 +27,7 @@ function(Diabetes_binary=0.13933302,
          Age=8.03211921,
          HeartDiseaseorAttack=0.09418559,
          MentHlth=3.18477215){
-  return(list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
-              HighBP.Mean=as.numeric(HighBP),
-              HighChol.Mean=as.numeric(HighChol),
-              HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
-              Smoker.Mean=as.numeric(Smoker),
-              PhysActivity.Mean=as.numeric(PhysActivity),
-              Age.Mean=as.numeric(Age),
-              HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
-              MentHlth.Mean=as.numeric(MentHlth))
-  )
+
   # Read in data
   rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
   
@@ -101,7 +92,18 @@ function(Diabetes_binary=0.13933302,
   
   # Find and display Log Loss of prediction 
   mod_logloss<- paste0("The best model's logloss is ",Logloss(rawData$Diabetes_binary,rf_Pred3))
-  return(mod_logloss)
+  
+  return(list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
+              HighBP.Mean=as.numeric(HighBP),
+              HighChol.Mean=as.numeric(HighChol),
+              HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
+              Smoker.Mean=as.numeric(Smoker),
+              PhysActivity.Mean=as.numeric(PhysActivity),
+              Age.Mean=as.numeric(Age),
+              HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
+              MentHlth.Mean=as.numeric(MentHlth),
+              mod_logloss)
+  )
 }
 
 ## Test Functions
