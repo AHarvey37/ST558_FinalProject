@@ -38,13 +38,14 @@ trctrl<- trainControl(method = "cv",
 
 
 #Best model
-cart_TreeFit3<- train(Diabetes_binary ~ .,
-                      data = diabetesTrain,
-                      method = "rpart",
-                      trControl = trctrl,
-                      metric = "logLoss",
-                      #family = "binomial",
-                      tuneGrid = expand.grid(cp = seq(0,1,by=.1))
+rf_Fit3<- train(Diabetes_binary ~ .,
+                data = diabetesTrain,
+                method = "ranger",
+                trControl = trctrl,
+                metric = "logLoss",
+                tuneGrid = expand.grid(mtry = 3,
+                                       splitrule = "extratrees",
+                                       min.node.size = 100)
 )
 
 # Return info

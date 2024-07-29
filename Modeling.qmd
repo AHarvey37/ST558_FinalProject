@@ -37,6 +37,7 @@ rawData <- read.csv("./diabetes_binary_health_indicators_BRFSS2015.csv")
 #create a new data frame for cleaning and converts all binary variables into factors
 cleaned<- rawData|>
   select(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth,BMI)|>
+  drop_na()|>
   mutate(Diabetes_binary = factor(Diabetes_binary,labels = c("No","Yes")),
          Age = as.factor(Age),
          HighBP = as.factor(HighBP),
@@ -257,7 +258,7 @@ Comparison_forest
 
 ## Final Model selection 
 
-|   In this final section we take the best models from above and compare them to see which is the overall best model. We do this be comparing the lowest logloss from the three models when they are predicting on the test data set. Since we have already trained all three models we will use the predict function to predict the results of the test set. We will then look at the logloss of each model and select the lowest logloss as our best model.
+|   In this final section we take the best models from above and compare them to see which is the overall best model. We do this be comparing the lowest logloss from the three models when they are predicting on the test data set. Since we have already trained all three models we will use the predict function to predict the results of the test set. We will then look at the logloss of each model and select the lowest logloss as our best model. After comparing our models we find that Random Forest is our best model.
 
 ```{r compare best models}
 
@@ -282,9 +283,17 @@ rf_Pred<-predict(rf_Fit,
 rf_Pred
 
 Logloss<- function(real,prediction){
-  results<- -1/length(real)*(sum(real*log(prediction)+(1-real)*log(1-prediction)))
+  results<- -1/length(real)*sum(real*log10(prediction)+(1-real)*log10(1-prediction))
   return(results)
 }
+
+test<- function(real,pred){
+  results<-sum(log10(pred))
+  return(results)
+}
+
+
+test(rawData$Diabetes_binary,cart_TreePredict)
 
 final_compar<-data.frame(rbind(Logloss(rawData$Diabetes_binary,bayesGLMPredict),
                                Logloss(rawData$Diabetes_binary,cart_TreePredict),
