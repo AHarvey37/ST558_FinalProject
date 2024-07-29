@@ -99,7 +99,7 @@ function(Diabetes_binary=0.13933302,
   
   
   # Find and display Log Loss of prediction 
-  Logloss(rawData$Diabetes_binary,cart_TreePredict)
+  Logloss(rawData$Diabetes_binary,rf_Pred3)
 }
 
 ## Test Functions
