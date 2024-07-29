@@ -84,16 +84,15 @@ trctrl<- trainControl(method = "cv",
                       summaryFunction = mnLogLoss)
 ```
 
-# write a paragraph about log models
-lower the logloss the better, it is used for classification models in machine learning perfect logloss = 0. logLoss calculates the actual value of an observation and finds the difference between that actual value and the predicted value. The total logloss for a model is the mean logloss for the model. 
+## Logistic Regression Models
 
-# Write a paragraph about logistic regression models and why use
+|    For our first model type we will use a Bayes Logistic regression model. Logistic regression models explores the relationship between the independent variables and the response variable. In this case we are looking at a binary classification, whether the response variable will be 0 or 1 (has diabetes or does not), so the model will use the logit function to predict this relationship.
 
 ```{r train and fit glm}
 # Generalized Linear Model
 Diabetes_logFit1<-train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                        data = diabetesTrain,
-                       method = "glm",
+                       method = "bayesglm",
                        trControl = trctrl,
                        metric = "logLoss",
                        family = "binomial")
@@ -101,7 +100,7 @@ Diabetes_logFit1<-train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+
 # Generalized Linear Model
 Diabetes_logFit2<-train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+PhysActivity+Age,
                        data = diabetesTrain,
-                       method = "glm",
+                       method = "bayesglm",
                        trControl = trctrl,
                        metric = "logLoss",
                        family = "binomial")
@@ -109,7 +108,7 @@ Diabetes_logFit2<-train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+
 # Generalized Linear Model
 Diabetes_logFit3<-train(Diabetes_binary ~ .,
                        data = diabetesTrain,
-                       method = "glm",
+                       method = "bayesglm",
                        trControl = trctrl,
                        metric = "logLoss",
                        family = "binomial",
@@ -128,18 +127,11 @@ Comparison
 # Best model = BayesGLM
 ```
 
-# write paragraph on Classigication trees
+## Classification trees
+
+|   The second model type that will be used is the classification tree method. This model takes is a decision tree and we will use a 'CART' method. The classification and regression tree (CART) looks at how the response variable interacts with all other variables by growing a tree. A tree is grown by splitting each prediction into its own path based on a specific prediction value, i.e. if a prediction value is above a certain value then it will fork to one direction and if it is under the specified value then it will fork to the other direction. This will continue until each node reaches a terminal level. This model type is prone to over-fitting and thus we must implement pruning methods to ensure that the model is not over fitted.  
 
 ```{r Classification trees}
-# classTree_Fit<- tree(Diabetes_binary ~                           Age+HighChol+HighBP+HvyAlcoholConsump+Smoker+PhysActivity,
-#                      data = diabetesTrain,
-#                      split = "deviance"
-#                      )
-# # summary(classTree_Fit)
-# # plot(classTree_Fit)
-# classTree_Predict<-predict(classTree_Fit,
-#                            newdata = diabetesTest
-#                            )
 
 cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                        data = diabetesTrain,
@@ -147,7 +139,7 @@ cart_TreeFit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smo
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
+                       tuneGrid = expand.grid(cp = seq(0,5,by=.1))
                        )
 cart_TreePredict <- predict(cart_TreeFit,
                             newdata = diabetesTest,
@@ -159,7 +151,7 @@ cart_TreeFit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Sm
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
+                       tuneGrid = expand.grid(cp = seq(0,5,by=.1))
                        )
 cart_TreePredict2 <- predict(cart_TreeFit2,
                             newdata = diabetesTest,
@@ -171,21 +163,21 @@ cart_TreeFit3<- train(Diabetes_binary ~ .,
                        trControl = trctrl,
                        metric = "logLoss",
                        #family = "binomial",
-                       tuneGrid = expand.grid(cp = seq(0,1,by=.1))
+                       tuneGrid = expand.grid(cp = seq(0,5,by=.1))
                        )
 cart_TreePredict3 <- predict(cart_TreeFit3,
                             newdata = diabetesTest,
                             type = "prob")
 
 
-cart_TreeFit$bestTune
-cart_TreeFit2$bestTune
-cart_TreeFit3$bestTune
+cart_TreeFit$results
+cart_TreeFit2$results
+cart_TreeFit3$results
 
 Comparison_tree<- data.frame(rbind(cart_TreeFit$results,
                                    cart_TreeFit2$results,
                                    cart_TreeFit3$results))|>
-  mutate(Model_type = c("1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3"))|>
+  # mutate(Model_type = c("1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3"))|>
   select(Model_type,cp,logLoss,logLossSD)
 
 Comparison_tree
@@ -196,7 +188,10 @@ Comparison_tree
 
 
 
-# random forrest explain random forests
+## Random Forests
+
+|   The final model type that we will examine is the Random Forest. The Random Forest method is very similar to the classification tree model type but instead of growing one tree model type grows many tree. While this may seem like it would be easily more beneficial to the classification tree method the random forest loses some of the specificity that the classification tree has since it averages many trees together. This average is an attempt to increase accuracy but it does not always improve.
+
 
 ```{r random forests}
 rf_Fit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
@@ -204,7 +199,7 @@ rf_Fit<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker,
                method = "ranger",
                trControl = trctrl,
                metric = "logLoss",
-               tuneGrid = expand.grid(mtry = 3,
+               tuneGrid = expand.grid(mtry = 5,
                                       splitrule = "extratrees",
                                       min.node.size = 100)
                        )
@@ -218,7 +213,7 @@ rf_Fit2<- train(Diabetes_binary ~ HighBP+HighChol+BMI+HvyAlcoholConsump+Smoker+P
                 method = "ranger",
                 trControl = trctrl,
                 metric = "logLoss",
-                tuneGrid = expand.grid(mtry = 3,
+                tuneGrid = expand.grid(mtry = 5,
                                        splitrule = "extratrees",
                                        min.node.size = 100)
                        )
@@ -232,7 +227,7 @@ rf_Fit3<- train(Diabetes_binary ~ .,
                 method = "ranger",
                 trControl = trctrl,
                 metric = "logLoss",
-                tuneGrid = expand.grid(mtry = 3,
+                tuneGrid = expand.grid(mtry = 5,
                                        splitrule = "extratrees",
                                        min.node.size = 100)
                        )
@@ -259,7 +254,9 @@ Comparison_forest
 # Best Forest = range
 ```
 
-# final model selection
+## Final Model selection 
+
+|   In this final section we take the best models from above and compare them to see which is the overall best model. We do this be comparing the lowest logloss from the three models when they are predicting on the test data set. Since we have already trained all three models we will use the predict function to predict the results of the test set. We will then look at the logloss of each model and select the lowest logloss as our best model.
 
 ```{r compare best models}
 
