@@ -10,7 +10,8 @@ library(tidyverse)
 function(){
   list(Name = "Andrew Harvey",
        EDA = "https://aharvey37.github.io/ST558_FinalProject/EDA.html",
-       Model = "https://aharvey37.github.io/ST558_FinalProject/Modeling.html")
+       Model = "https://aharvey37.github.io/ST558_FinalProject/Modeling.html",
+       Note = "When running /pred endpoint it may take between 3 and 5 min to load due to building forest.")
 }
 
 
@@ -26,16 +27,16 @@ function(Diabetes_binary=0.13933302,
          Age=8.03211921,
          HeartDiseaseorAttack=0.09418559,
          MentHlth=3.18477215){
-  list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
-       HighBP.Mean=as.numeric(HighBP),
-       HighChol.Mean=as.numeric(HighChol),
-       HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
-       Smoker.Mean=as.numeric(Smoker),
-       PhysActivity.Mean=as.numeric(PhysActivity),
-       Age.Mean=as.numeric(Age),
-       HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
-       MentHlth.Mean=as.numeric(MentHlth))
-  
+  return(list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
+              HighBP.Mean=as.numeric(HighBP),
+              HighChol.Mean=as.numeric(HighChol),
+              HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
+              Smoker.Mean=as.numeric(Smoker),
+              PhysActivity.Mean=as.numeric(PhysActivity),
+              Age.Mean=as.numeric(Age),
+              HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
+              MentHlth.Mean=as.numeric(MentHlth))
+  )
   # Read in data
   rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
   
@@ -93,13 +94,14 @@ function(Diabetes_binary=0.13933302,
   
   # LogLoss function
   Logloss<- function(real,prediction){
-    results<- -1/length(real)*sum(real*log10(prediction)+(1-real)*log10(1-prediction))
-    return(results)
+      results<- -1/length(real)*sum(real*log10(prediction)+(1-real)*log10(1-prediction))
+      return(results)
   }
   
   
   # Find and display Log Loss of prediction 
-  Logloss(rawData$Diabetes_binary,rf_Pred3)
+  mod_logloss<- paste0("The best model's logloss is ",Logloss(rawData$Diabetes_binary,rf_Pred3))
+  return(mod_logloss)
 }
 
 ## Test Functions
