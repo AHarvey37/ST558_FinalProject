@@ -2,6 +2,41 @@ library(plumber)
 library(caret)
 library(tidyverse)
 
+
+
+# Return info
+#* @param info 
+#* @get /info
+function(){
+  list(Name = "Andrew Harvey",
+       EDA = "https://aharvey37.github.io/ST558_FinalProject/EDA.html",
+       Model = "https://aharvey37.github.io/ST558_FinalProject/Modeling.html")
+}
+
+
+
+# Pred end point
+#* @param pred
+#* @get /pred
+function(Diabetes_binary=0.13933302,
+         HighBP=0.42900110,
+         HighChol=0.42412094,
+         HvyAlcoholConsump=0.05619678,
+         Smoker=0.44316856,
+         PhysActivity=0.75654368,
+         Age=8.03211921,
+         HeartDiseaseorAttack=0.09418559,
+         MentHlth=3.18477215){
+  list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
+       HighBP.Mean=as.numeric(HighBP),
+       HighChol.Mean=as.numeric(HighChol),
+       HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
+       Smoker.Mean=as.numeric(Smoker),
+       PhysActivity.Mean=as.numeric(PhysActivity),
+       Age.Mean=as.numeric(Age),
+       HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
+       MentHlth.Mean=as.numeric(MentHlth))
+}
 rawData <- read.csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 
 cleaned<- rawData|>
@@ -47,39 +82,6 @@ rf_Fit3<- train(Diabetes_binary ~ .,
                                        splitrule = "extratrees",
                                        min.node.size = 100)
 )
-
-# Return info
-#* @param info 
-#* @get /info
-function(){
-  list(Name = "Andrew Harvey",
-       EDA = "https://aharvey37.github.io/ST558_FinalProject/EDA.html",
-       Model = "https://aharvey37.github.io/ST558_FinalProject/Modeling.html")
-}
-
-
-# Pred end point
-#* @param pred
-#* @get /pred
-function(Diabetes_binary=0.13933302,
-         HighBP=0.42900110,
-         HighChol=0.42412094,
-         HvyAlcoholConsump=0.05619678,
-         Smoker=0.44316856,
-         PhysActivity=0.75654368,
-         Age=8.03211921,
-         HeartDiseaseorAttack=0.09418559,
-         MentHlth=3.18477215){
-  list(Diabetes_binary.Mean=as.numeric(Diabetes_binary),
-  HighBP.Mean=as.numeric(HighBP),
-  HighChol.Mean=as.numeric(HighChol),
-  HvyAlcoholConsump.Mean=as.numeric(HvyAlcoholConsump),
-  Smoker.Mean=as.numeric(Smoker),
-  PhysActivity.Mean=as.numeric(PhysActivity),
-  Age.Mean=as.numeric(Age),
-  HeartDiseaseorAttack.Mean=as.numeric(HeartDiseaseorAttack),
-  MentHlth.Mean=as.numeric(MentHlth))
-}
 
 ## Test Functions
 

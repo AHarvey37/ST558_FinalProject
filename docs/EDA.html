@@ -140,32 +140,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This project will use the “diabetes_binary_health_indicators_BRFSS2015” dataset. According <a href="https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data">Kaggle.com</a> this data set contains 253,680 observation where the response variable is whether the observed individual does not have diabetes (0) or has prediabetes/diabetes (1). While the dataset is in a numeric format the following vaiables are categorical:</p>
+<section id="exploritory-data-analysis-file" class="level1">
+<h1>Exploritory Data Analysis File</h1>
+<section id="introduction-section" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-section">Introduction Section</h2>
+<div class="line-block">&nbsp;&nbsp;This project will use the “diabetes_binary_health_indicators_BRFSS2015” data set. According <a href="https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/data">Kaggle.com</a> this data set contains 253,680 observation where the response variable is whether the observed individual does or does not not have diabetes (0 or 1 respectively) or has pre-diabetes/diabetes (1). The original data set contains 22 variables most of which are categorical. We have limited the variables to those below:</div>
 <ol type="1">
-<li>Diabetes_binary (response variable)</li>
-<li>HighBP</li>
-<li>HighChol</li>
-<li>CholCheck</li>
-<li>Smoker</li>
-<li>Stroke</li>
-<li>HeartDiseaseorAttack</li>
-<li>PhysActivity</li>
-<li>Fruits</li>
-<li>Veggies</li>
-<li>HvyAlcoholConsump</li>
-<li>AnyHealthcare</li>
-<li>NoDocbcCost</li>
-<li>DiffWalk</li>
-<li>Sex</li>
+<li>Diabetes_binary (response variable) - This variable illustrates if the subject has or does not have diabetes.</li>
+<li>HighBP (Categorical) - This is a binary variable describing whether or not the subject has high blood pressure.</li>
+<li>HighChol (Categorical) - This is a binary variable describing whether or not the subject has high cholesterol.</li>
+<li>Smoker (Categorical) - This is a binary variable describing whether or not the subject has smoked at least 100 cigarettes in their lifetime. 100 cigarettes is equal to 5 packs.</li>
+<li>HeartDiseaseorAttack (Categorical) - This is a binary variable describing whether or not the subject has coronary heart disease or myocardial infarction (a heart attack).<br>
+</li>
+<li>PhysActivity (Categorical) - This is a binary variable describing whether or not the subject has conducted physical activity (outside of their job) in the past 30 days.</li>
+<li>HvyAlcoholConsump (Categorical) - This is a binary variable describing whether or not the subject, if male, consumes 14 or more alcoholic drinks per week, or if female, consumes 7 or more alcoholic drinks per week.</li>
+<li>MentHlth - This variable is a scale from 1 to 30 of how many days the subject has had POOR mental health.</li>
+<li>Age (Categorical) - This variable breaks age into 13 levels which are 18-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50-54, 55-59, 60-64, 65-69, 70-74, 75-80, and 80 or older.</li>
 </ol>
-<p>The following variables are continuous in the dataset: 1. BMI 2. GenHlth 3. MentHlth 4. PhysHlth 5. Age 6. Education 7. Income</p>
+<section id="exploritory-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="exploritory-data-analysis">Exploritory Data Analysis</h3>
+<div class="line-block">The purpose of my exploratory data analysis (EDA) was to identify variables that may have some significant relationship to the diabetes_binary variable. That is to say, does a particular variable either have a relationship to the response variable or not. I explored this by making 4 plots that helped illustrate the possible relationship. I also investigated variables that I did not ultimately use and added variables that I did not investigate initially. The ultimate goal of my model will be to determine what combination of the selected variables are accurate indicators of diabetes.</div>
 </section>
-<section id="fix-me" class="level1">
-<h1>FIX ME</h1>
-<p>##describe the purpose of your EDA and ultimate goal of modeling</p>
-<div class="line-block">&nbsp;&nbsp;&nbsp;First we will load in the packages and the raw data.</div>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<div class="line-block">&nbsp;&nbsp;&nbsp;First we will load in the packages and the raw data. We then identified categorical variables and their levels by finding unique observations for each variable. Checking for missing values will come next. Finally, variables were converted to factors in order to better display information in the plots. Each plot has a title and a few other visualization adjustments to help the viewer understand.</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -412,29 +411,203 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create a new data frame for cleaning and converts all binary variables into factors</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Cleaning1<span class="ot">&lt;-</span> rawData<span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Diabetes_binary =</span> <span class="fu">as.factor</span>(Diabetes_binary),</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">HighBP =</span> <span class="fu">as.factor</span>(HighBP),</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">HighChol =</span> <span class="fu">as.factor</span>(HighChol),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">CholCheck =</span> <span class="fu">as.factor</span>(CholCheck),</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">Smoker =</span> <span class="fu">as.factor</span>(Smoker),</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">Stroke =</span> <span class="fu">as.factor</span>(Stroke),</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">HeartDiseaseorAttack =</span> <span class="fu">as.factor</span>(HeartDiseaseorAttack),</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">PhysActivity =</span> <span class="fu">as.factor</span>(PhysActivity),</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">Fruits =</span> <span class="fu">as.factor</span>(Fruits),</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">Veggies =</span> <span class="fu">as.factor</span>(Veggies),</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">HvyAlcoholConsump =</span> <span class="fu">as.factor</span>(HvyAlcoholConsump),</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">AnyHealthcare =</span> <span class="fu">as.factor</span>(AnyHealthcare),</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">NoDocbcCost =</span> <span class="fu">as.factor</span>(NoDocbcCost),</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">DiffWalk =</span> <span class="fu">as.factor</span>(DiffWalk),</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sex =</span> <span class="fu">as.factor</span>(Sex)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()<span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Diabetes_binary =</span> <span class="fu">as.factor</span>(Diabetes_binary),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">HighBP =</span> <span class="fu">as.factor</span>(HighBP),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">HighChol =</span> <span class="fu">as.factor</span>(HighChol),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">CholCheck =</span> <span class="fu">as.factor</span>(CholCheck),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">Smoker =</span> <span class="fu">as.factor</span>(Smoker),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">Stroke =</span> <span class="fu">as.factor</span>(Stroke),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">HeartDiseaseorAttack =</span> <span class="fu">as.factor</span>(HeartDiseaseorAttack),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">PhysActivity =</span> <span class="fu">as.factor</span>(PhysActivity),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">Fruits =</span> <span class="fu">as.factor</span>(Fruits),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">Veggies =</span> <span class="fu">as.factor</span>(Veggies),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">HvyAlcoholConsump =</span> <span class="fu">as.factor</span>(HvyAlcoholConsump),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">AnyHealthcare =</span> <span class="fu">as.factor</span>(AnyHealthcare),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">NoDocbcCost =</span> <span class="fu">as.factor</span>(NoDocbcCost),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">DiffWalk =</span> <span class="fu">as.factor</span>(DiffWalk),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sex =</span> <span class="fu">as.factor</span>(Sex)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="summarizations" class="level2">
+<h2 class="anchored" data-anchor-id="summarizations">Summarizations</h2>
+<div class="line-block">In this section I created 4 summary tables and 4 plots to help illustrate the relation between diabetes_binary and different variables. My initial selection of variables were body mass index (BMI), Mental Health (MentHlth), Heavy Alcohol Consumption (HvyAlcoholConsump), Age, Education, and Income. Ultimately my model used all of these variables except Education and Income.</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># frequency Body Mass Index (actual) by diabetes_binary</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>BMIsummary<span class="ot">&lt;-</span> Cleaning1<span class="sc">|&gt;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Diabetes_binary, BMI, <span class="at">name =</span> <span class="st">"Count"</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(BMIsummary,<span class="fu">aes</span>(<span class="at">x =</span> BMI, <span class="at">y =</span> Count)) <span class="sc">+</span> <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>,<span class="at">position =</span> <span class="st">"dodge"</span>, <span class="fu">aes</span>(<span class="at">fill =</span> Diabetes_binary))<span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span>Diabetes_binary) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(BMIsummary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Diabetes_binary BMI Count
+1                 0  12     6
+2                 0  13    19
+3                 0  14    37
+4                 0  15   120
+5                 0  16   328
+6                 0  17   728
+7                 0  18  1720
+8                 0  19  3833
+9                 0  20  6086
+10                0  21  9376
+11                0  22 12952
+12                0  23 14697
+13                0  24 18081
+14                0  25 15695
+15                0  26 18560
+16                0  27 21849
+17                0  28 14294
+18                0  29 12659
+19                0  30 12251
+20                0  31 10163
+21                0  32  8354
+22                0  33  6908
+23                0  34  5494
+24                0  35  4131
+25                0  36  3393
+26                0  37  3029
+27                0  38  2385
+28                0  39  2056
+29                0  40  1534
+30                0  41  1141
+31                0  42  1127
+32                0  43   989
+33                0  44   697
+34                0  45   517
+35                0  46   471
+36                0  47   404
+37                0  48   304
+38                0  49   250
+39                0  50   224
+40                0  51   155
+41                0  52   129
+42                0  53   152
+43                0  54    65
+44                0  55   104
+45                0  56    66
+46                0  57    61
+47                0  58    36
+48                0  59    32
+49                0  60    38
+50                0  61    21
+51                0  62    27
+52                0  63    16
+53                0  64    16
+54                0  65     9
+55                0  66     4
+56                0  67     9
+57                0  68     8
+58                0  69     6
+59                0  70    10
+60                0  71    44
+61                0  72     7
+62                0  73    44
+63                0  74    15
+64                0  75    46
+65                0  76     3
+66                0  77    48
+67                0  79    62
+68                0  80     1
+69                0  81    42
+70                0  82    31
+71                0  83     1
+72                0  84    39
+73                0  86     1
+74                0  87    52
+75                0  88     2
+76                0  89    25
+77                0  90     1
+78                0  91     1
+79                0  92    27
+80                0  95    11
+81                0  96     1
+82                0  98     4
+83                1  13     2
+84                1  14     4
+85                1  15    12
+86                1  16    20
+87                1  17    48
+88                1  18    83
+89                1  19   135
+90                1  20   241
+91                1  21   479
+92                1  22   691
+93                1  23   913
+94                1  24  1469
+95                1  25  1451
+96                1  26  2002
+97                1  27  2757
+98                1  28  2251
+99                1  29  2231
+100               1  30  2322
+101               1  31  2112
+102               1  32  2120
+103               1  33  2040
+104               1  34  1687
+105               1  35  1444
+106               1  36  1240
+107               1  37  1118
+108               1  38  1012
+109               1  39   855
+110               1  40   724
+111               1  41   518
+112               1  42   512
+113               1  43   511
+114               1  44   346
+115               1  45   302
+116               1  46   279
+117               1  47   218
+118               1  48   180
+119               1  49   166
+120               1  50   148
+121               1  51    98
+122               1  52    86
+123               1  53    85
+124               1  54    48
+125               1  55    65
+126               1  56    43
+127               1  57    25
+128               1  58    35
+129               1  59    22
+130               1  60    25
+131               1  61    14
+132               1  62    16
+133               1  63    18
+134               1  64     8
+135               1  65    10
+136               1  66     9
+137               1  67     6
+138               1  68     6
+139               1  69     3
+140               1  70     5
+141               1  71     5
+142               1  72     7
+143               1  73     3
+144               1  74     1
+145               1  75     6
+146               1  77     7
+147               1  78     1
+148               1  79     4
+149               1  80     1
+150               1  81     7
+151               1  82     6
+152               1  83     1
+153               1  84     5
+154               1  85     1
+155               1  87     9
+156               1  89     3
+157               1  92     5
+158               1  95     1
+159               1  98     3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(BMIsummary,<span class="fu">aes</span>(<span class="at">x =</span> BMI, <span class="at">y =</span> Count)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"BMI Summary by diabetes"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"BMI Value"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequecy"</span>)<span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>))<span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>,<span class="at">position =</span> <span class="st">"dodge"</span>, <span class="fu">aes</span>(<span class="at">fill =</span> Diabetes_binary))<span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Diabetes_binary) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -442,14 +615,82 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># General Health  </span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 = excellent 2 = very good 3 = good 4 = fair 5 = poor</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>HealthSummary<span class="ot">&lt;-</span>Cleaning1<span class="sc">|&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Diabetes_binary,GenHlth)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(HealthSummary, <span class="fu">aes</span>(GenHlth,n,<span class="at">colour =</span> Diabetes_binary)) <span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">stat =</span> <span class="st">"identity"</span>)<span class="sc">+</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(GenHlth,n),<span class="at">stat =</span> <span class="st">"identity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>HealthSummary<span class="ot">&lt;-</span>Cleaning1<span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Diabetes_binary,MentHlth)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(HealthSummary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Diabetes_binary MentHlth      n
+1                0        0 152277
+2                0        1   7726
+3                0        2  11546
+4                0        3   6457
+5                0        4   3300
+6                0        5   7807
+7                0        6    824
+8                0        7   2695
+9                0        8    529
+10               0        9     78
+11               0       10   5309
+12               0       11     38
+13               0       12    331
+14               0       13     33
+15               0       14    969
+16               0       15   4482
+17               0       16     74
+18               0       17     43
+19               0       18     77
+20               0       19     12
+21               0       20   2701
+22               0       21    179
+23               0       22     52
+24               0       23     30
+25               0       24     27
+26               0       25    915
+27               0       26     38
+28               0       27     67
+29               0       28    270
+30               0       29    128
+31               0       30   9320
+32               1        0  23403
+33               1        1    812
+34               1        2   1508
+35               1        3    924
+36               1        4    489
+37               1        5   1223
+38               1        6    164
+39               1        7    405
+40               1        8    110
+41               1        9     13
+42               1       10   1064
+43               1       11      3
+44               1       12     67
+45               1       13      8
+46               1       14    198
+47               1       15   1023
+48               1       16     14
+49               1       17     11
+50               1       18     20
+51               1       19      4
+52               1       20    663
+53               1       21     48
+54               1       22     11
+55               1       23      8
+56               1       24      6
+57               1       25    273
+58               1       26      7
+59               1       27     12
+60               1       28     57
+61               1       29     30
+62               1       30   2768</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(HealthSummary, <span class="fu">aes</span>(MentHlth,n,<span class="at">colour =</span> Diabetes_binary)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mental Health Summary by diabetes"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Days of Poor Mental Health"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequecy"</span>)<span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>))<span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">stat =</span> <span class="st">"identity"</span>)<span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(MentHlth,n),<span class="at">stat =</span> <span class="st">"identity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -457,13 +698,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Heavy Alcohol Consumpsion </span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week)</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>HeartHealthSummary<span class="ot">&lt;-</span> Cleaning1<span class="sc">|&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Diabetes_binary,HvyAlcoholConsump)<span class="sc">|&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>()</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Cleaning1,<span class="fu">aes</span>(PhysHlth,<span class="at">fill =</span> Diabetes_binary)) <span class="sc">+</span> <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Heavy Alcohol Consumpsion </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>AlcoholSummary<span class="ot">&lt;-</span> Cleaning1<span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Diabetes_binary,HvyAlcoholConsump)<span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>AlcoholSummary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+# Groups:   Diabetes_binary [2]
+  Diabetes_binary HvyAlcoholConsump      n
+  &lt;fct&gt;           &lt;fct&gt;              &lt;int&gt;
+1 0               0                 204910
+2 0               1                  13424
+3 1               0                  34514
+4 1               1                    832</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Cleaning1,<span class="fu">aes</span>(PhysHlth,<span class="at">fill =</span> Diabetes_binary)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Physical Health Summary by diabetes"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Days where subject exercised outside of work"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequecy"</span>)<span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -471,16 +729,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GenBox <span class="ot">&lt;-</span> Cleaning1<span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Diabetes_binary)<span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">col =</span> <span class="fu">c</span>(Age,Education,Income),<span class="at">names_to =</span> <span class="st">"Category"</span>, <span class="at">values_to =</span> <span class="st">"level"</span>)<span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Diabetes_binary,Category,level,<span class="at">name =</span> <span class="st">"val"</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(GenBox, <span class="fu">aes</span>(Diabetes_binary,level, <span class="at">fill =</span> Diabetes_binary)) <span class="sc">+</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Category)<span class="sc">+</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">13</span>))<span class="sc">+</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>val))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>GenBox <span class="ot">&lt;-</span> Cleaning1<span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Diabetes_binary)<span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">col =</span> <span class="fu">c</span>(Age,Education,Income),<span class="at">names_to =</span> <span class="st">"Category"</span>, <span class="at">values_to =</span> <span class="st">"level"</span>)<span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Diabetes_binary,Category,level,<span class="at">name =</span> <span class="st">"val"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>GenBox</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 54 × 4
+# Groups:   Diabetes_binary [2]
+   Diabetes_binary Category level   val
+   &lt;fct&gt;           &lt;chr&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 0               Age          1  5622
+ 2 0               Age          2  7458
+ 3 0               Age          3 10809
+ 4 0               Age          4 13197
+ 5 0               Age          5 15106
+ 6 0               Age          6 18077
+ 7 0               Age          7 23226
+ 8 0               Age          8 26569
+ 9 0               Age          9 27511
+10 0               Age         10 25636
+# ℹ 44 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(GenBox, <span class="fu">aes</span>(Diabetes_binary,level, <span class="at">fill =</span> Diabetes_binary)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Category)<span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">13</span>))<span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>val))<span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Summary of Age, Education, and Income by diabetes"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Levels (Values on Plot = Frequency)"</span>)<span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -488,39 +767,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Means<span class="ot">&lt;-</span> rawData<span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth)<span class="sc">|&gt;</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Diabetes_binary.mean =</span> <span class="fu">mean</span>(Diabetes_binary),</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">HighBP.mean =</span> <span class="fu">mean</span>(HighBP),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">HighChol.mean =</span> <span class="fu">mean</span>(HighChol),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">HvyAlcoholConsump.mean =</span> <span class="fu">mean</span>(HvyAlcoholConsump),</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Smoker.mean =</span> <span class="fu">mean</span>(Smoker),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">PhysActivity.mean =</span> <span class="fu">mean</span>(PhysActivity),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">AgeGroup.mean =</span> <span class="fu">mean</span>(Age),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">HeartDiseaseorAttack.mean =</span> <span class="fu">mean</span>(HeartDiseaseorAttack),</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">MentHlth.mean =</span> <span class="fu">mean</span>(MentHlth))<span class="sc">|&gt;</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>Means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>Means<span class="ot">&lt;-</span> rawData<span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Diabetes_binary,HighBP,HighChol,HvyAlcoholConsump,Smoker,PhysActivity,Age,HeartDiseaseorAttack,MentHlth,BMI)<span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Diabetes_binary.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Diabetes_binary),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">HighBP.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(HighBP),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">HighChol.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(HighChol),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">HvyAlcoholConsump.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(HvyAlcoholConsump),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Smoker.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Smoker),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">PhysActivity.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(PhysActivity),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">AgeGroup.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Age),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">HeartDiseaseorAttack.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(HeartDiseaseorAttack),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">MentHlth.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MentHlth),<span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">BMI.mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(BMI),<span class="at">digits =</span> <span class="dv">2</span>))<span class="sc">|&gt;</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">names_to =</span> <span class="st">"Variable"</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>Means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 9 × 2
-  name                       value
-  &lt;chr&gt;                      &lt;dbl&gt;
-1 Diabetes_binary.mean      0.139 
-2 HighBP.mean               0.429 
-3 HighChol.mean             0.424 
-4 HvyAlcoholConsump.mean    0.0562
-5 Smoker.mean               0.443 
-6 PhysActivity.mean         0.757 
-7 AgeGroup.mean             8.03  
-8 HeartDiseaseorAttack.mean 0.0942
-9 MentHlth.mean             3.18  </code></pre>
+<pre><code># A tibble: 10 × 2
+   Variable                  value
+   &lt;chr&gt;                     &lt;dbl&gt;
+ 1 Diabetes_binary.mean       0.14
+ 2 HighBP.mean                0.43
+ 3 HighChol.mean              0.42
+ 4 HvyAlcoholConsump.mean     0.06
+ 5 Smoker.mean                0.44
+ 6 PhysActivity.mean          0.76
+ 7 AgeGroup.mean              8.03
+ 8 HeartDiseaseorAttack.mean  0.09
+ 9 MentHlth.mean              3.18
+10 BMI.mean                  28.4 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Means,<span class="fu">aes</span>(<span class="at">x=</span>Variable,<span class="at">y=</span>value))<span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>)<span class="sc">+</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Average by Final Selected Variables"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Variable"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Mean"</span>)<span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>))<span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> value),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span>.<span class="dv">5</span>)<span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">15</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">vjust =</span> <span class="fl">1.25</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust =</span> <span class="dv">1</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">size =</span> <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/Summary Tables-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>```</p>
 <p><a href="Modeling.html">Click here for the Modeling Page</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
